@@ -1,0 +1,217 @@
+{
+  "version": "1.0.0",
+  "trained_at": "2026-11-14T11:21:12.127997+00:00",
+  "dataset_size": 10000,
+  "dataset_type": "synthetic",
+  "classifier": {
+    "model_type": "GradientBoostingClassifier",
+    "accuracy": 0.958,
+    "macro_f1": 0.9531,
+    "per_class": {
+      "Balanced": {
+        "precision": 0.9613,
+        "recall": 0.969,
+        "f1": 0.9652,
+        "support": 872.0
+      },
+      "Overspender": {
+        "precision": 0.9669,
+        "recall": 0.9017,
+        "f1": 0.9331,
+        "support": 356.0
+      },
+      "Saver": {
+        "precision": 0.9506,
+        "recall": 0.9715,
+        "f1": 0.9609,
+        "support": 772.0
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "Balanced",
+        "Overspender",
+        "Saver"
+      ],
+      "matrix": [
+        [
+          845,
+          5,
+          22
+        ],
+        [
+          18,
+          321,
+          17
+        ],
+        [
+          16,
+          6,
+          750
+        ]
+      ]
+    },
+    "benchmarks": {
+      "LogisticRegression": {
+        "cv_f1_macro_mean": 0.7014,
+        "cv_f1_macro_std": 0.0171,
+        "cv_scores": [
+          0.6767,
+          0.6988,
+          0.7111,
+          0.7274,
+          0.6928
+        ]
+      },
+      "RandomForestClassifier": {
+        "cv_f1_macro_mean": 0.9582,
+        "cv_f1_macro_std": 0.0047,
+        "cv_scores": [
+          0.9522,
+          0.9652,
+          0.954,
+          0.9607,
+          0.959
+        ]
+      },
+      "GradientBoostingClassifier": {
+        "cv_f1_macro_mean": 0.9595,
+        "cv_f1_macro_std": 0.0043,
+        "cv_scores": [
+          0.9526,
+          0.965,
+          0.957,
+          0.9608,
+          0.962
+        ]
+      }
+    },
+    "feature_importance": {
+      "debt_to_income": 0.3975,
+      "savings_rate": 0.3659,
+      "investment_ratio": 0.1685,
+      "essential_expense_ratio": 0.0224,
+      "discretionary_expense_ratio": 0.0161,
+      "food_ratio": 0.0063,
+      "shopping_ratio": 0.0049,
+      "entertainment_ratio": 0.0048,
+      "emergency_fund_months": 0.0035,
+      "age": 0.0033,
+      "total_expenses": 0.0027,
+      "monthly_income": 0.0026,
+      "dependents": 0.0009,
+      "risk_profile": 0.0007
+    },
+    "features": [
+      "age",
+      "dependents",
+      "risk_profile",
+      "monthly_income",
+      "total_expenses",
+      "savings_rate",
+      "essential_expense_ratio",
+      "discretionary_expense_ratio",
+      "food_ratio",
+      "entertainment_ratio",
+      "shopping_ratio",
+      "debt_to_income",
+      "emergency_fund_months",
+      "investment_ratio"
+    ]
+  },
+  "regressor": {
+    "model_type": "GradientBoostingRegressor",
+    "overall_r2": 0.9812,
+    "overall_rmse": 215341.71,
+    "overall_mae": 99482.5,
+    "targets": {
+      "savings_12m": {
+        "rmse": 19367.82,
+        "mae": 11400.61,
+        "r2": 0.9889,
+        "std_error": 19353.41
+      },
+      "wealth_5y": {
+        "rmse": 303922.68,
+        "mae": 187564.38,
+        "r2": 0.9734,
+        "std_error": 303920.38
+      }
+    },
+    "residual_std": {
+      "savings_12m": 19353.40754257034,
+      "wealth_5y": 303920.3794602953
+    },
+    "benchmarks": {
+      "RidgeRegression": {
+        "cv_r2_mean": 0.9765,
+        "cv_r2_std": 0.0011,
+        "cv_scores": [
+          0.9752,
+          0.976,
+          0.9763,
+          0.9769,
+          0.9783
+        ]
+      },
+      "RandomForestRegressor": {
+        "cv_r2_mean": 0.9705,
+        "cv_r2_std": 0.0031,
+        "cv_scores": [
+          0.9698,
+          0.9738,
+          0.9718,
+          0.972,
+          0.9649
+        ]
+      },
+      "GradientBoostingRegressor": {
+        "cv_r2_mean": 0.9789,
+        "cv_r2_std": 0.0013,
+        "cv_scores": [
+          0.9791,
+          0.9791,
+          0.98,
+          0.9798,
+          0.9764
+        ]
+      }
+    },
+    "feature_importance": {
+      "monthly_income": 0.5694,
+      "savings_rate": 0.2397,
+      "existing_investments": 0.1577,
+      "investment_ratio": 0.0266,
+      "risk_profile": 0.0017,
+      "total_expenses": 0.0012,
+      "existing_savings": 0.0012,
+      "shopping_ratio": 0.0004,
+      "debt_to_income": 0.0004,
+      "emergency_fund_months": 0.0004,
+      "essential_expense_ratio": 0.0003,
+      "food_ratio": 0.0003,
+      "discretionary_expense_ratio": 0.0002,
+      "entertainment_ratio": 0.0002,
+      "age": 0.0001,
+      "dependents": 0.0001
+    },
+    "features": [
+      "age",
+      "dependents",
+      "risk_profile",
+      "monthly_income",
+      "total_expenses",
+      "savings_rate",
+      "essential_expense_ratio",
+      "discretionary_expense_ratio",
+      "food_ratio",
+      "entertainment_ratio",
+      "shopping_ratio",
+      "debt_to_income",
+      "emergency_fund_months",
+      "investment_ratio",
+      "existing_savings",
+      "existing_investments"
+    ]
+  }
+}
