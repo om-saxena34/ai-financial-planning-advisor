@@ -70,7 +70,7 @@ The database seed script (`npm run seed` in `server`) automatically populates th
   2. AI Behavior switches to **Overspender**.
   3. The AI Recommendation Engine triggers **Priority High Directives** (e.g. 50/30/20 budget reset, food dining cut, emergency fund alert).
 
-### Minute 2:30 – 3:45: Interactive What-If Scenario Simulator
+### Minute 2:30 – 3:15: Interactive What-If Scenario Simulator
 - Click **"What-If"** in the top navigation.
 - Explain: *"A key innovation in our system is counterfactual simulation."*
 - Drag the **"Trim Discretionary Expenses"** slider to 25% and **"Boost Monthly SIP"** by ₹6,000.
@@ -79,7 +79,17 @@ The database seed script (`npm run seed` in `server`) automatically populates th
   - Persona shifts from **Overspender → Balanced**.
   - 5-year wealth generation gains **+₹8.4 Lakhs** of compound returns on the interactive chart.
 
-### Minute 3:45 – 5:00: Machine Learning Rigor & Model Transparency
+### Minute 3:15 – 4:00: Interactive AI Chatbot ("Fin") Live Demonstration
+- Click the floating **"Ask Fin"** button in the bottom right corner (or navigate to `/chat`).
+- Show the examiner conversational financial advisory in action:
+  1. **Live SIP Math Query:** Type: `"If I save 5000 for 10 years at 12%?"`
+     - Point out the live entity extraction (`5000`, `10 years`, `12%`), annuity due compounding calculation, and interactive SIP breakdown card showing +₹5.61 Lakhs of growth.
+  2. **Affordability Check:** Type: `"Can I buy an iPhone for 65k?"`
+     - Point out how Fin calculates the user's free monthly cash surplus and advises months to save to prevent high-interest EMI traps.
+  3. **Hinglish Understanding:** Type: `"Emergency fund kya hota hai?"`
+     - Demonstrates natural conversational matching across 85 peer-reviewed personal finance topics.
+
+### Minute 4:00 – 5:00: Machine Learning Rigor & Model Transparency
 - Click **"Model Metrics (Viva)"** (`/model-metrics`).
 - Explain the scientific validation:
   - 10,000-record synthetic research dataset generated with realistic log-normal Indian salary distributions.
@@ -148,3 +158,21 @@ The database seed script (`npm run seed` in `server`) automatically populates th
 ### Question 8: How did you secure authentication and API routes?
 **Winning Answer:**
 > *"We implemented standard defense-in-depth security: passwords are salted and hashed using `bcrypt` (10 rounds). Authentication uses stateless JWT access tokens (15-minute lifespan) paired with HTTP-only refresh tokens. Sensitive endpoints enforce CORS restrictions, Helmet HTTP security headers, mongo-sanitize to prevent NoSQL injection, and express-rate-limit to protect against brute-force attacks."*
+
+---
+
+### Question 9: How does the conversational assistant "Fin" work? Why not use an external LLM like OpenAI?
+**Winning Answer:**
+> *"Fin is designed as an explainable, deterministic financial assistant rather than a probabilistic generative LLM. In fintech, generative models suffer from mathematical hallucinations, regulatory non-compliance, latency, and expensive API token limits. Fin operates an intent router coupled with an entity extractor: it dynamically evaluates mathematical formulas for SIP and compounding (annuity due), queries real-time user database telemetry for health scores and expenses, and references a curated 85-question peer-reviewed knowledge base across 9 financial domains. It runs 100% offline with zero latency and zero runtime cost."*
+
+---
+
+### Question 10: How does Fin parse Indian monetary expressions like "50k", "1.5 lakh", or "1 cr"?
+**Winning Answer:**
+> *"We implemented a specialized natural language entity extractor in `entityExtractor.js`. It utilizes tokenized regex pattern matching to normalize Indian numerical standards: interpreting 'k' as $\times 1,000$, 'lakh/lac/L' as $\times 100,000$, and 'cr/crore' as $\times 10,000,000$, alongside durations in months/years and percentage return rates. It feeds these normalized primitives directly into our verified financial math functions."*
+
+---
+
+### Question 11: What extra usability enhancements did you build into the frontend?
+**Winning Answer:**
+> *"Beyond the core requirements, we introduced: (1) An omnipresent Quick Command Palette accessed via `Ctrl+K` or `⌘K` for keyboard navigation across all financial tools, (2) Inline SVG corner decorations and gentle floating matter animations (`FloatingElements.jsx`) to create a calm, human-made aesthetic, (3) Interactive rich response cards inside the chat that allow instant 1-click goal setting and calculator deep-dives, and (4) Plain Class 7-8 English vocabulary with inline tooltips explaining financial terms."*

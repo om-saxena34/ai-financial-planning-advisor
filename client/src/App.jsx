@@ -20,6 +20,7 @@ import HealthScore from './pages/HealthScore';
 import Insights from './pages/Insights';
 import ModelMetrics from './pages/ModelMetrics';
 import WhatIfSimulator from './pages/WhatIfSimulator';
+import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/model-metrics" element={<ModelMetrics />} />
+          <Route path="/chat" element={<Chat />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
