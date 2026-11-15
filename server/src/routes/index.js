@@ -10,6 +10,7 @@ const healthScoreRoutes = require('./healthScore.routes');
 const predictionRoutes = require('./prediction.routes');
 const recommendationRoutes = require('./recommendation.routes');
 const mlMetricsRoutes = require('./mlMetrics.routes');
+const chatbotRoutes = require('./chatbot.routes');
 
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
@@ -20,6 +21,7 @@ router.use('/health-score', healthScoreRoutes);
 router.use('/predictions', predictionRoutes);
 router.use('/recommendations', recommendationRoutes);
 router.use('/ml-metrics', mlMetricsRoutes);
+router.use('/chatbot', chatbotRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

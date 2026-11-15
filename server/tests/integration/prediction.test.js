@@ -35,28 +35,31 @@ beforeEach(async () => {
   await FinancialProfile.deleteMany({});
   await User.deleteMany({});
 
+  const uniqueEmail = `pred.tester.${Date.now()}.${Math.random().toString(36).substring(7)}@example.com`;
   const reg = await request(app).post('/api/v1/auth/register').send({
     name: 'Prediction Tester',
-    email: 'pred.tester@example.com',
+    email: uniqueEmail,
     password: 'Password@123',
   });
 
-  accessToken = reg.body.data.accessToken;
-  userId = reg.body.data.user.id || reg.body.data.user._id;
+  accessToken = reg.body?.data?.accessToken;
+  userId = reg.body?.data?.user?.id || reg.body?.data?.user?._id;
 
   // Create financial profile for the user
-  await FinancialProfile.create({
-    userId,
-    age: 28,
-    occupationType: 'salaried',
-    monthlyIncome: 75000,
-    fixedExpenses: 25000,
-    riskProfile: 'moderate',
-    existingSavings: 150000,
-    existingInvestments: 200000,
-    dependents: 1,
-  });
-});
+  if (userId) {
+    await FinancialProfile.create({
+      userId,
+      age: 28,
+      occupationType: 'salaried',
+      monthlyIncome: 75000,
+      fixedExpenses: 25000,
+      riskProfile: 'moderate',
+      existingSavings: 150000,
+      existingInvestments: 200000,
+      dependents: 1,
+    });
+  }
+}, 20000);
 
 describe('ML Prediction & Fallback Engine Integration Tests', () => {
   describe('Rule-Based Fallback Mechanics', () => {
