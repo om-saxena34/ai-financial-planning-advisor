@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Wallet, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Wallet, Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import PageWrapper from '../components/layout/PageWrapper';
+import CornerDecor from '../components/common/CornerDecor';
 
 export default function Register() {
   const { register } = useAuth();
@@ -30,12 +31,12 @@ export default function Register() {
   const strength = getPasswordStrength(password);
   const strengthLabels = ['Too short', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
   const strengthColors = [
-    'bg-gray-200',
-    'bg-rose-500',
-    'bg-amber-500',
-    'bg-yellow-500',
-    'bg-indigo-500',
-    'bg-emerald-500',
+    'bg-brand-100',
+    'bg-bad',
+    'bg-warn',
+    'bg-warn',
+    'bg-brand-500',
+    'bg-good',
   ];
 
   const handleSubmit = async (e) => {
@@ -65,35 +66,40 @@ export default function Register() {
 
   return (
     <PageWrapper>
-      <div className="min-h-[75vh] flex items-center justify-center py-6 px-4">
-        <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 sm:p-10 shadow-xl shadow-indigo-500/5">
+      <div className="min-h-[75vh] flex items-center justify-center py-6 px-4 relative">
+        <CornerDecor variant="blob" position="top-right" opacity={0.3} />
+        <CornerDecor variant="dots" position="bottom-left" opacity={0.35} />
+
+        <div className="w-full max-w-md relative z-10">
+          <div className="bg-white border border-brand-100 rounded-3xl p-8 sm:p-10 shadow-card relative overflow-hidden">
+            <CornerDecor variant="arc" position="top-right" opacity={0.25} />
+
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="inline-flex w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 items-center justify-center text-indigo-600 dark:text-indigo-400 mb-3 shadow-inner">
-                <Wallet className="w-6 h-6" />
+            <div className="text-center mb-7 relative z-10">
+              <div className="inline-flex w-11 h-11 rounded-2xl bg-brand-50 items-center justify-center text-brand-600 mb-3 shadow-xs">
+                <Wallet className="w-5 h-5" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Join FinWise to build intelligent, predictive wealth
+              <h1 className="text-2xl font-heading font-bold text-ink">Create Account</h1>
+              <p className="mt-1 text-xs sm:text-sm text-muted">
+                Join FinWise to plan your savings and hit your goals
               </p>
             </div>
 
             {/* Error banner */}
             {errorMsg && (
-              <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 text-sm text-rose-600 dark:text-rose-400 flex items-start space-x-2">
+              <div className="mb-5 p-3 rounded-xl bg-bad-bg border border-bad/30 text-xs text-bad flex items-start space-x-2">
                 <span>⚠️</span>
                 <span>{errorMsg}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
                   Full Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                     <User className="w-4 h-4" />
                   </div>
                   <input
@@ -102,17 +108,17 @@ export default function Register() {
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Om Sharma"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-100 bg-bg text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all text-xs sm:text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
                   Email Address
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
@@ -121,17 +127,17 @@ export default function Register() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@example.com"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-100 bg-bg text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all text-xs sm:text-sm"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
                   Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -140,12 +146,12 @@ export default function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 6 characters"
                     required
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all text-sm"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-brand-100 bg-bg text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all text-xs sm:text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted hover:text-ink"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -154,12 +160,12 @@ export default function Register() {
                 {password && (
                   <div className="mt-2">
                     <div className="flex justify-between items-center text-[11px] mb-1">
-                      <span className="text-gray-500">Strength:</span>
-                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                      <span className="text-muted">Password Safety:</span>
+                      <span className="font-semibold text-ink">
                         {strengthLabels[strength]}
                       </span>
                     </div>
-                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden flex">
+                    <div className="w-full h-1.5 bg-brand-50 rounded-full overflow-hidden flex">
                       <div
                         className={`h-full transition-all duration-300 ${strengthColors[strength]}`}
                         style={{ width: `${(strength / 5) * 100}%` }}
@@ -170,11 +176,11 @@ export default function Register() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-1.5">
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-muted">
                     <Lock className="w-4 h-4" />
                   </div>
                   <input
@@ -183,7 +189,7 @@ export default function Register() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat your password"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition-all text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-100 bg-bg text-ink placeholder-muted focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all text-xs sm:text-sm"
                   />
                 </div>
               </div>
@@ -192,10 +198,10 @@ export default function Register() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 px-4 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md shadow-indigo-600/25 transition-all flex items-center justify-center space-x-2 disabled:opacity-60"
+                  className="w-full py-2.5 px-4 rounded-xl text-white font-semibold text-xs sm:text-sm bg-brand-500 hover:bg-brand-600 shadow-card transition-all flex items-center justify-center space-x-2 disabled:opacity-60"
                 >
                   {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
                       <span>Continue to Onboarding</span>
@@ -206,12 +212,9 @@ export default function Register() {
               </div>
             </form>
 
-            <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-6 text-center text-xs text-muted relative z-10">
               Already have an account?{' '}
-              <Link
-                to="/login"
-                className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-              >
+              <Link to="/login" className="font-semibold text-brand-600 hover:underline">
                 Sign In
               </Link>
             </div>

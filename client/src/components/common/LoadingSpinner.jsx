@@ -12,7 +12,7 @@ export default function LoadingSpinner({ size = 'md', className = '' }) {
     <div className={clsx('flex items-center justify-center', className)}>
       <div
         className={clsx(
-          'animate-spin rounded-full border-primary-200 border-t-primary-600 dark:border-gray-700 dark:border-t-primary-400',
+          'animate-spin rounded-full border-[var(--blue-100)] border-t-[var(--blue-500)]',
           sizeClasses[size] || sizeClasses.md
         )}
         role="status"

@@ -6,185 +6,225 @@ import {
   Target,
   ShieldCheck,
   ChevronRight,
-  PieChart,
   ArrowRight,
   Sparkles,
-  Zap,
-  BarChart3,
   CheckCircle2,
+  Coins,
+  Smile,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import PageWrapper from '../components/layout/PageWrapper';
+import CornerDecor from '../components/common/CornerDecor';
+import AnimatedNumber from '../components/common/AnimatedNumber';
+import FloatingElements from '../components/common/FloatingElements';
+import { pageMotion, fadeUpItem, staggerContainer } from '../styles/motion';
 
 export default function Landing() {
   const features = [
     {
       icon: Brain,
       title: 'AI Behavior Classification',
-      desc: 'Machine learning models classify your financial behavior into Saver, Balanced, or Overspender, highlighting your top spending drivers.',
-      color: 'from-purple-500 to-indigo-500',
+      desc: 'See if you are a Saver, Balanced, or Overspender. Find where your money goes each month.',
     },
     {
       icon: TrendingUp,
-      title: 'Predictive Wealth Forecast',
-      desc: 'Trained regression algorithms project your 12-month savings and 5-year wealth accumulation with confidence bands.',
-      color: 'from-blue-500 to-cyan-500',
+      title: '5-Year Wealth Forecast',
+      desc: 'See how your money can grow over 1, 3, and 5 years with regular monthly savings.',
     },
     {
       icon: Target,
-      title: 'Goal-Based SIP Planning',
-      desc: 'Calculate exact monthly SIP commitments, step-up rates, and inflation adjustments needed to achieve every milestone.',
-      color: 'from-emerald-500 to-teal-500',
+      title: 'Easy Goal Planning',
+      desc: 'Pick a goal like a laptop, travel, or safety cash. We tell you the exact monthly amount to save.',
     },
     {
       icon: ShieldCheck,
-      title: 'Transparent Health Score',
-      desc: '0–100 weighted metric analyzing savings rate, emergency coverage, debt-to-income, and discretionary expense discipline.',
-      color: 'from-amber-500 to-orange-500',
+      title: 'Money Health Score (0–100)',
+      desc: 'A single, honest number that checks your savings, loans, and emergency cushion.',
     },
   ];
 
   const steps = [
     {
       num: '01',
-      title: 'Set Up Your Profile',
-      desc: 'Provide your income, fixed commitments, and risk preference in a 2-minute guided onboarding.',
+      title: 'Share your basic numbers',
+      desc: 'Add your monthly income and fixed rent or bills in a 2-minute quick setup.',
     },
     {
       num: '02',
-      title: 'Track & Import Transactions',
-      desc: 'Log daily expenses or import bank statements via CSV with automated categorization.',
+      title: 'Track your daily expenses',
+      desc: 'Enter what you spend or upload a CSV file. We group it into food, travel, and shopping.',
     },
     {
       num: '03',
-      title: 'Get AI-Powered Action Plans',
-      desc: 'Receive transparent, explainable recommendations ranked by financial impact.',
+      title: 'Get simple, clear tips',
+      desc: 'Get friendly ideas on where to save more and chat with Fin, your AI money buddy.',
     },
   ];
 
   return (
     <PageWrapper>
-      {/* Hero Section */}
-      <div className="relative pt-6 pb-16 sm:pb-24 overflow-hidden text-center">
-        <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-medium mb-6">
-          <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
-          <span>Final Year B.Tech Computer Science Project · Invertis University</span>
-        </div>
+      <motion.div variants={pageMotion} initial="initial" animate="animate">
+        {/* Hero Section */}
+        <div className="relative pt-8 pb-16 sm:pb-24 text-center">
+          {/* Subtle Corner Decorations & Floating Matter */}
+          <CornerDecor variant="blob" position="top-right" opacity={0.35} />
+          <CornerDecor variant="dots" position="bottom-left" opacity={0.4} />
+          <FloatingElements variant="hero" />
 
-        <h1 className="text-4xl sm:text-6xl font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight max-w-4xl mx-auto">
-          Intelligent Financial Planning Powered by{' '}
-          <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Machine Learning
-          </span>
-        </h1>
-
-        <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto leading-relaxed">
-          FinWise combines mathematical compound planning, transparent health scoring, and trained ML microservices to help students and young professionals master their wealth.
-        </p>
-
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/register"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-xl text-base font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/30 transition-all transform hover:-translate-y-0.5"
-          >
-            <span>Start Free Advisor</span>
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Link>
-          <Link
-            to="/login"
-            className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3.5 rounded-xl text-base font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-all shadow-sm"
-          >
-            <span>Demo Login</span>
-            <ChevronRight className="w-5 h-5 ml-1 text-gray-400" />
-          </Link>
-        </div>
-
-        {/* Stats highlight bar */}
-        <div className="mt-14 max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200/80 dark:border-gray-800">
-          <div>
-            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">10,000+</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Synthetic Profiles</div>
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs sm:text-sm font-medium mb-4 shadow-xs">
+            <Sparkles className="w-4 h-4 text-brand-500" />
+            <span>Intelligent Financial Planning Powered by Machine Learning</span>
           </div>
-          <div>
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">0–100</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Health Score Index</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">3-Tier</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Microservice Arch</div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">100%</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Explainable AI</div>
-          </div>
-        </div>
-      </div>
 
-      {/* Features Grid */}
-      <div className="py-12 border-t border-gray-200 dark:border-gray-800">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Core System Capabilities</h2>
-          <p className="mt-3 text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-            Engineered specifically to solve the manual spreadsheets problem with automated, intelligent forecasting.
+          <h1 className="text-4xl sm:text-6xl font-heading font-extrabold text-ink tracking-tight leading-tight max-w-4xl mx-auto">
+            Money planning that actually{' '}
+            <span className="text-brand-500 underline decoration-brand-200 decoration-wavy decoration-2">
+              makes sense
+            </span>
+            .
+          </h1>
+
+          <p className="mt-5 text-base sm:text-lg text-muted max-w-2xl mx-auto leading-relaxed">
+            No confusing finance jargon. Track your daily expenses, grow your savings with smart SIP math, and check your Money Health Score in seconds.
           </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+            <Link
+              to="/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3 rounded-2xl text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 shadow-card hover:shadow-hover transition-all transform hover:-translate-y-0.5"
+            >
+              <span>Start Free Advisor</span>
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Link>
+            <Link
+              to="/login"
+              className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 rounded-2xl text-sm font-semibold text-ink bg-white hover:bg-brand-50 border border-brand-100 transition-all shadow-xs"
+            >
+              <span>Demo Login</span>
+              <ChevronRight className="w-4 h-4 ml-1 text-muted" />
+            </Link>
+          </div>
+
+          {/* Quick Highlight Stats Bar */}
+          <div className="mt-14 max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-3xl bg-white border border-brand-100 shadow-card">
+            <div className="p-2">
+              <div className="text-2xl font-heading font-bold text-brand-600">
+                <AnimatedNumber value={10000} suffix="+" />
+              </div>
+              <div className="text-xs text-muted mt-0.5">Sample Profiles</div>
+            </div>
+            <div className="p-2">
+              <div className="text-2xl font-heading font-bold text-good">
+                0 to 100
+              </div>
+              <div className="text-xs text-muted mt-0.5">Health Score Gauge</div>
+            </div>
+            <div className="p-2">
+              <div className="text-2xl font-heading font-bold text-brand-500">
+                ₹0
+              </div>
+              <div className="text-xs text-muted mt-0.5">100% Free Demo</div>
+            </div>
+            <div className="p-2">
+              <div className="text-2xl font-heading font-bold text-ink">
+                Class 7
+              </div>
+              <div className="text-xs text-muted mt-0.5">Simple English</div>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {features.map((f, i) => {
-            const Icon = f.icon;
-            return (
+        {/* Features Grid */}
+        <div className="py-14 border-t border-brand-100">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-ink">
+              Everything you need to handle your money
+            </h2>
+            <p className="mt-2 text-sm text-muted">
+              We took away all the complicated spreadsheets and replaced them with friendly guidance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {features.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={i}
+                  className="relative p-6 rounded-2xl bg-white border border-brand-100 shadow-card hover:shadow-hover transition-all hover:-translate-y-1 overflow-hidden"
+                >
+                  <CornerDecor variant="dots" position="top-right" opacity={0.2} />
+                  <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-base font-heading font-bold text-ink mb-1.5">
+                    {f.title}
+                  </h3>
+                  <p className="text-xs text-muted leading-relaxed">{f.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div className="py-14 border-t border-brand-100">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="text-xs font-semibold tracking-wider uppercase text-brand-600">
+              Three Simple Steps
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-ink mt-1">
+              How FinWise helps you
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {steps.map((s, i) => (
               <div
                 key={i}
-                className="group relative p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
+                className="relative p-6 rounded-2xl bg-white border border-brand-100 shadow-card"
               >
-                <div
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-tr ${f.color} flex items-center justify-center text-white mb-5 shadow-md`}
-                >
-                  <Icon className="w-6 h-6" />
+                <div className="text-3xl font-heading font-black text-brand-100 mb-2">
+                  {s.num}
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{f.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+                <h3 className="text-base font-heading font-bold text-ink mb-1.5">
+                  {s.title}
+                </h3>
+                <p className="text-xs text-muted leading-relaxed">{s.desc}</p>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* How it works */}
-      <div className="py-16 border-t border-gray-200 dark:border-gray-800">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <span className="text-xs font-semibold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">
-            Methodology
-          </span>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-1">How FinWise Works</h2>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {steps.map((s, i) => (
-            <div
-              key={i}
-              className="relative p-6 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
-            >
-              <div className="text-3xl font-black text-indigo-600/20 dark:text-indigo-400/20 mb-3">{s.num}</div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{s.desc}</p>
+        {/* Bottom CTA Card */}
+        <div className="my-10 p-8 sm:p-10 rounded-3xl bg-brand-50 border border-brand-100 text-center relative overflow-hidden shadow-card">
+          <CornerDecor variant="arc" position="top-right" opacity={0.5} />
+          <CornerDecor variant="blob" position="bottom-left" opacity={0.3} />
+
+          <div className="relative z-10 max-w-xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-ink mb-2">
+              Ready to see where your money goes?
+            </h2>
+            <p className="text-muted text-xs sm:text-sm mb-6">
+              Sign in with one click as a Saver or an Overspender to see the entire dashboard in action.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/login"
+                className="inline-flex items-center px-6 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs shadow-card transition-colors"
+              >
+                Open Demo Accounts
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex items-center px-6 py-2.5 rounded-xl bg-white hover:bg-brand-50 text-ink font-semibold text-xs border border-brand-100 transition-colors"
+              >
+                Create My Account
+              </Link>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
-
-      {/* Bottom CTA */}
-      <div className="my-12 p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white text-center shadow-xl relative overflow-hidden">
-        <h2 className="text-2xl sm:text-3xl font-extrabold mb-3">Ready to explore the demo system?</h2>
-        <p className="text-indigo-200 max-w-xl mx-auto text-sm sm:text-base mb-6">
-          Access the full suite of financial calculators, real-time health score simulator, and machine learning insight dashboards.
-        </p>
-        <Link
-          to="/register"
-          className="inline-flex items-center px-6 py-3 rounded-xl bg-white text-indigo-900 font-bold hover:bg-indigo-50 transition-colors shadow-md"
-        >
-          Create Free Account
-        </Link>
-      </div>
+      </motion.div>
     </PageWrapper>
   );
 }

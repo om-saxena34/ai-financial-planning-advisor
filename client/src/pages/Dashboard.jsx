@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PageWrapper from '../components/layout/PageWrapper';
+import CornerDecor from '../components/common/CornerDecor';
+import HelpTooltip from '../components/common/HelpTooltip';
+import FloatingElements from '../components/common/FloatingElements';
+import AnimatedNumber from '../components/common/AnimatedNumber';
 import { healthScoreService } from '../services/healthScore.service';
 import { transactionService } from '../services/transaction.service';
 import { goalService } from '../services/goal.service';
@@ -17,7 +21,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from 'recharts';
 import {
   TrendingUp,
@@ -27,23 +30,22 @@ import {
   Target,
   Sparkles,
   ArrowUpRight,
-  ArrowDownRight,
   Sliders,
   CheckCircle2,
-  AlertTriangle,
-  Award,
-  Zap,
+  Bot,
+  ChevronRight,
 } from 'lucide-react';
 
-const CATEGORY_COLORS = [
-  '#4f46e5',
-  '#06b6d4',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#8b5cf6',
-  '#ec4899',
-  '#6b7280',
+// Blue shades first palette
+const BLUE_PALETTE = [
+  '#5B9FD6', // Brand Blue 500
+  '#2F6EA3', // Brand Blue 700
+  '#7EB3E0', // Blue 400
+  '#A9CFEE', // Blue 300
+  '#C4DFF5', // Blue 200
+  '#4EAB7E', // Soft Green
+  '#E09B3D', // Soft Amber
+  '#E26D6D', // Soft Coral
 ];
 
 export default function Dashboard() {
@@ -88,9 +90,9 @@ export default function Dashboard() {
   if (loading) {
     return (
       <PageWrapper title="Dashboard">
-        <div className="py-24 text-center text-gray-500">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          Synthesizing your financial telemetry and AI predictions...
+        <div className="py-24 text-center text-muted">
+          <div className="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm font-medium text-ink">Loading your money overview...</p>
         </div>
       </PageWrapper>
     );
@@ -105,15 +107,13 @@ export default function Dashboard() {
     ? (summaryData.ratios.savingsRate * 100).toFixed(1)
     : ((savings / income) * 100).toFixed(1);
 
-  // Behavioral persona formatting
   const predictedClass = classification?.predicted_class || 'Balanced';
   const personaBadgeStyles = {
-    Saver: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
-    Balanced: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800',
-    Overspender: 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800',
+    Saver: 'bg-good-bg text-good border-good/30',
+    Balanced: 'bg-brand-50 text-brand-700 border-brand-200',
+    Overspender: 'bg-bad-bg text-bad border-bad/30',
   };
 
-  // Category breakdown data for pie chart
   const categoryData =
     summaryData?.categoryBreakdown?.map((cat) => ({
       name: cat.category,
@@ -127,7 +127,6 @@ export default function Dashboard() {
       { name: 'Shopping', value: 5000 },
     ];
 
-  // 6-Month cash flow trend
   const trendData = summaryData?.monthlyTrend?.map((item) => ({
     month: item.month,
     income: item.income,
@@ -142,15 +141,22 @@ export default function Dashboard() {
   ];
 
   return (
-    <PageWrapper title="Advisor Dashboard">
+    <PageWrapper title="Your Money Dashboard">
       {/* Top Banner / Persona Header */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 mb-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border border-brand-100 rounded-3xl p-6 sm:p-7 mb-7 shadow-card relative overflow-hidden">
+        <CornerDecor variant="wave" position="bottom-right" opacity={0.65} />
+        <FloatingElements variant="dashboard" />
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                AI Financial Persona
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Your Spending Pattern
               </span>
+              <HelpTooltip
+                title="Spending Pattern"
+                text="How you spend and save. Savers keep 30%+ of income, Balanced keep 15-30%, and Overspenders spend almost everything."
+              />
               <span
                 className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
                   personaBadgeStyles[predictedClass] || personaBadgeStyles.Balanced
@@ -158,98 +164,93 @@ export default function Dashboard() {
               >
                 ● {predictedClass}
               </span>
-              {classification?.is_fallback && (
-                <span className="text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full">
-                  Heuristic Fallback
-                </span>
-              )}
             </div>
-            <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-heading font-extrabold text-ink">
               Welcome back to your Advisor
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-              Your financial health score is rated{' '}
-              <strong className="text-indigo-600 dark:text-indigo-400">{grade}</strong> based on six objective pillars.
+            <p className="text-xs sm:text-sm text-muted mt-0.5">
+              Your Money Health Score is{' '}
+              <strong className="text-brand-700 font-semibold">{grade} ({score}/100)</strong>. Keep your savings steady to stay on track.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Link
               to="/what-if"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 text-xs font-semibold rounded-xl transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 text-xs font-semibold rounded-xl transition-all shadow-xs"
             >
-              <Sliders className="w-4 h-4" />
+              <Sliders className="w-3.5 h-3.5 text-brand-600" />
               What-If Simulator
             </Link>
             <Link
               to="/insights"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold rounded-xl shadow-card transition-all"
             >
-              <Sparkles className="w-4 h-4" />
-              Model Insights
+              <Sparkles className="w-3.5 h-3.5" />
+              Pattern Details
             </Link>
           </div>
         </div>
       </div>
 
       {/* 4 Core KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">
-            Monthly Income
-            <Wallet className="w-4 h-4 text-emerald-500" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+        <div className="bg-white border border-brand-100 rounded-2xl p-5 shadow-card hover:shadow-hover transition-all">
+          <div className="flex items-center justify-between text-muted text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <span>Monthly Inflow</span>
+            <Wallet className="w-4 h-4 text-brand-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            ₹{income.toLocaleString('en-IN')}
+          <div className="text-2xl font-heading font-bold text-ink">
+            <AnimatedNumber value={income} prefix="₹" formatIndian={true} />
           </div>
-          <div className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-1 font-medium">
-            <ArrowUpRight className="w-3.5 h-3.5" /> Stable inflow
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">
-            Monthly Expenses
-            <Coins className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            ₹{expenses.toLocaleString('en-IN')}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            {Math.round((expenses / income) * 100)}% of monthly earnings
+          <div className="text-xs text-good flex items-center gap-1 mt-1 font-medium">
+            <ArrowUpRight className="w-3.5 h-3.5" /> Stable monthly income
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">
-            Savings Rate
-            <TrendingUp className="w-4 h-4 text-indigo-500" />
+        <div className="bg-white border border-brand-100 rounded-2xl p-5 shadow-card hover:shadow-hover transition-all">
+          <div className="flex items-center justify-between text-muted text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <span>Monthly Expenses</span>
+            <Coins className="w-4 h-4 text-bad" />
           </div>
-          <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+          <div className="text-2xl font-heading font-bold text-ink">
+            <AnimatedNumber value={expenses} prefix="₹" formatIndian={true} />
+          </div>
+          <div className="text-xs text-muted mt-1">
+            {Math.round((expenses / income) * 100)}% of your monthly money
+          </div>
+        </div>
+
+        <div className="bg-white border border-brand-100 rounded-2xl p-5 shadow-card hover:shadow-hover transition-all">
+          <div className="flex items-center justify-between text-muted text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <span>Monthly Savings</span>
+            <TrendingUp className="w-4 h-4 text-brand-600" />
+          </div>
+          <div className="text-2xl font-heading font-bold text-brand-600">
             {savingsRate}%
           </div>
-          <div className="text-xs text-gray-500 mt-1">
-            ₹{savings.toLocaleString('en-IN')} surplus / month
+          <div className="text-xs text-muted mt-1">
+            ₹{savings.toLocaleString('en-IN')} left over each month
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-xs">
-          <div className="flex items-center justify-between text-gray-500 text-xs font-semibold uppercase tracking-wider mb-2">
-            Health Score
-            <ShieldCheck className="w-4 h-4 text-amber-500" />
+        <div className="bg-white border border-brand-100 rounded-2xl p-5 shadow-card hover:shadow-hover transition-all">
+          <div className="flex items-center justify-between text-muted text-xs font-semibold uppercase tracking-wider mb-1.5">
+            <span>Health Score</span>
+            <ShieldCheck className="w-4 h-4 text-brand-500" />
           </div>
           <div className="flex items-baseline gap-2">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              {score}
+            <div className="text-2xl font-heading font-bold text-ink">
+              <AnimatedNumber value={score} />
             </div>
-            <span className="text-xs text-gray-400 font-semibold">/ 100</span>
-            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 ml-auto">
+            <span className="text-xs text-muted">/ 100</span>
+            <span className="text-xs font-bold text-brand-600 ml-auto">
               {grade}
             </span>
           </div>
-          <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full mt-2 overflow-hidden">
+          <div className="w-full h-1.5 bg-brand-50 rounded-full mt-2.5 overflow-hidden">
             <div
-              className="h-full bg-indigo-600 rounded-full"
+              className="h-full bg-brand-500 rounded-full transition-all duration-700"
               style={{ width: `${score}%` }}
             />
           </div>
@@ -257,21 +258,21 @@ export default function Dashboard() {
       </div>
 
       {/* Main Grid: Forecast & Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-7">
         {/* Cash Flow Area Chart (2 Cols) */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xs">
+        <div className="lg:col-span-2 bg-white border border-brand-100 rounded-3xl p-6 shadow-card">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                Income vs Expense Flow
+              <h2 className="text-base font-heading font-bold text-ink">
+                Income vs Spending Over Time
               </h2>
-              <p className="text-xs text-gray-500">6-Month monthly historical distribution</p>
+              <p className="text-xs text-muted">Your last 6 months of cash flow</p>
             </div>
             <Link
               to="/transactions"
-              className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+              className="text-xs text-brand-600 font-semibold hover:underline"
             >
-              View All Transactions →
+              All Expenses →
             </Link>
           </div>
           <div className="h-64">
@@ -279,36 +280,37 @@ export default function Dashboard() {
               <AreaChart data={trendData}>
                 <defs>
                   <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#5B9FD6" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#5B9FD6" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#E26D6D" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#E26D6D" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                <XAxis dataKey="month" stroke="#9ca3af" fontSize={11} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5EEF6" />
+                <XAxis dataKey="month" stroke="#6B7F92" fontSize={11} />
                 <YAxis
-                  stroke="#9ca3af"
+                  stroke="#6B7F92"
                   fontSize={11}
                   tickFormatter={(val) => `₹${val / 1000}k`}
                 />
                 <Tooltip
                   formatter={(value) => [`₹${Number(value).toLocaleString('en-IN')}`, '']}
                   contentStyle={{
-                    backgroundColor: '#1f2937',
-                    borderColor: '#374151',
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#DCEBF8',
                     borderRadius: '0.75rem',
-                    color: '#fff',
+                    color: '#1E3246',
                     fontSize: '12px',
+                    boxShadow: '0 4px 16px rgba(30, 50, 70, 0.08)',
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="income"
                   name="Income"
-                  stroke="#10b981"
+                  stroke="#5B9FD6"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorInc)"
@@ -317,7 +319,7 @@ export default function Dashboard() {
                   type="monotone"
                   dataKey="expense"
                   name="Expense"
-                  stroke="#ef4444"
+                  stroke="#E26D6D"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorExp)"
@@ -327,37 +329,45 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* AI Wealth Forecast Card (1 Col) */}
-        <div className="bg-gradient-to-br from-indigo-900 to-gray-900 border border-indigo-800 rounded-2xl p-6 text-white flex flex-col justify-between shadow-xs">
-          <div>
-            <div className="flex items-center justify-between text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-3">
-              <span>ML Predictive Forecast</span>
-              <Sparkles className="w-4 h-4 text-indigo-400" />
+        {/* Wealth Forecast Card (1 Col) */}
+        <div className="bg-brand-50 border border-brand-100 rounded-3xl p-6 text-ink flex flex-col justify-between shadow-card relative overflow-hidden">
+          <CornerDecor variant="arc" position="top-right" opacity={0.35} />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between text-brand-700 text-xs font-semibold uppercase tracking-wider mb-2">
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-brand-500" />
+                Wealth Forecast
+              </span>
+              <HelpTooltip
+                title="Wealth Forecast"
+                text="Estimates how much money you can save in 12 months and 5 years if you keep up your current monthly savings."
+              />
             </div>
-            <h3 className="text-lg font-bold mb-1">Projected Future Wealth</h3>
-            <p className="text-xs text-indigo-200 mb-6 leading-relaxed">
-              Based on your GradientBoosting regressor model trained on multi-year compounding trajectories.
+            <h3 className="text-base font-heading font-bold mb-1">Where your money can go</h3>
+            <p className="text-xs text-muted mb-5 leading-relaxed">
+              Based on your monthly surplus and compound interest over time.
             </p>
 
-            <div className="space-y-4">
-              <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                <span className="text-[11px] text-indigo-200 uppercase font-bold tracking-wider block">
-                  12-Month Projected Savings
+            <div className="space-y-3">
+              <div className="p-3 bg-white rounded-2xl border border-brand-100 shadow-xs">
+                <span className="text-[11px] text-muted uppercase font-bold tracking-wider block mb-0.5">
+                  12-Month Expected Savings
                 </span>
-                <span className="text-2xl font-extrabold text-emerald-400">
+                <span className="text-xl font-heading font-extrabold text-good">
                   ₹{(forecast?.predicted_savings_12m || savings * 12).toLocaleString('en-IN')}
                 </span>
               </div>
 
-              <div className="p-3 bg-white/10 rounded-xl border border-white/10">
-                <span className="text-[11px] text-indigo-200 uppercase font-bold tracking-wider block">
+              <div className="p-3 bg-white rounded-2xl border border-brand-100 shadow-xs">
+                <span className="text-[11px] text-muted uppercase font-bold tracking-wider block mb-0.5">
                   5-Year Estimated Wealth
                 </span>
-                <span className="text-2xl font-extrabold text-white">
+                <span className="text-xl font-heading font-extrabold text-brand-700">
                   ₹{(forecast?.predicted_wealth_5y || savings * 60 * 1.3).toLocaleString('en-IN')}
                 </span>
-                <div className="text-[11px] text-indigo-300 mt-1">
-                  Confidence band: ₹
+                <div className="text-[10px] text-muted mt-1">
+                  Estimated range: ₹
                   {(forecast?.confidence_band?.lower_bound || 0).toLocaleString('en-IN')} – ₹
                   {(forecast?.confidence_band?.upper_bound || 0).toLocaleString('en-IN')}
                 </div>
@@ -365,51 +375,53 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-white/10 mt-6">
+          <div className="pt-4 border-t border-brand-200/60 mt-5 relative z-10">
             <Link
               to="/what-if"
-              className="w-full block text-center py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl transition-all"
+              className="w-full block text-center py-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs rounded-xl shadow-xs transition-all"
             >
-              Simulate Income / SIP Boost →
+              See What-If Scenarios →
             </Link>
           </div>
         </div>
       </div>
 
       {/* Secondary Grid: Category Breakdown & Active Goals */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-7">
         {/* Category Donut (1 Col) */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xs">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">
-            Expense Allocation
+        <div className="bg-white border border-brand-100 rounded-3xl p-6 shadow-card">
+          <h2 className="text-base font-heading font-bold text-ink mb-0.5">
+            Where Your Money Goes
           </h2>
-          <p className="text-xs text-gray-500 mb-4">Current monthly spending distribution</p>
-          <div className="h-56">
+          <p className="text-xs text-muted mb-4">Your spending broken down by category</p>
+          <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={categoryData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
-                  outerRadius={75}
+                  innerRadius={46}
+                  outerRadius={72}
                   paddingAngle={3}
                   dataKey="value"
                 >
                   {categoryData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
-                      fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                      fill={BLUE_PALETTE[index % BLUE_PALETTE.length]}
                     />
                   ))}
                 </Pie>
                 <Tooltip
                   formatter={(val) => `₹${Number(val).toLocaleString('en-IN')}`}
                   contentStyle={{
-                    backgroundColor: '#1f2937',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: '0.5rem',
-                    color: '#fff',
+                    borderColor: '#DCEBF8',
+                    color: '#1E3246',
                     fontSize: '11px',
+                    boxShadow: '0 2px 8px rgba(30, 50, 70, 0.08)',
                   }}
                 />
               </PieChart>
@@ -417,76 +429,78 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {categoryData.slice(0, 4).map((cat, idx) => (
-              <div key={cat.name} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300">
+              <div key={cat.name} className="flex items-center gap-1.5 text-xs text-ink-secondary">
                 <span
                   className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: CATEGORY_COLORS[idx % CATEGORY_COLORS.length] }}
+                  style={{ backgroundColor: BLUE_PALETTE[idx % BLUE_PALETTE.length] }}
                 />
                 <span className="truncate">{cat.name}:</span>
-                <strong className="ml-auto">₹{(cat.value / 1000).toFixed(0)}k</strong>
+                <strong className="ml-auto text-ink">₹{(cat.value / 1000).toFixed(0)}k</strong>
               </div>
             ))}
           </div>
         </div>
 
         {/* Goals Progress Mini Widget (2 Cols) */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
-          <div>
+        <div className="lg:col-span-2 bg-white border border-brand-100 rounded-3xl p-6 shadow-card flex flex-col justify-between relative overflow-hidden">
+          <CornerDecor variant="dots" position="top-right" opacity={0.2} />
+
+          <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-base font-bold text-gray-900 dark:text-white">
-                  Active Financial Goals
+                <h2 className="text-base font-heading font-bold text-ink">
+                  Your Savings Goals
                 </h2>
-                <p className="text-xs text-gray-500">Milestones and required SIP monthly pace</p>
+                <p className="text-xs text-muted">Milestones you are working towards</p>
               </div>
               <Link
                 to="/goals"
-                className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+                className="text-xs text-brand-600 font-semibold hover:underline"
               >
-                Manage Goals →
+                All Goals →
               </Link>
             </div>
 
             {goals.length === 0 ? (
-              <div className="py-12 text-center text-gray-500">
-                <Target className="w-10 h-10 text-gray-400 mx-auto mb-2 opacity-60" />
+              <div className="py-10 text-center text-muted">
+                <Target className="w-9 h-9 text-brand-300 mx-auto mb-2 opacity-60" />
                 <p className="text-xs">No active goals yet. Add a target to begin tracking!</p>
                 <Link
                   to="/goals"
-                  className="inline-block mt-3 px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-lg"
+                  className="inline-block mt-3 px-3 py-1.5 bg-brand-500 text-white text-xs font-semibold rounded-xl shadow-xs"
                 >
                   Create Goal
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 {goals.slice(0, 3).map((g) => (
                   <div
                     key={g._id}
-                    className="p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700"
+                    className="p-3 bg-brand-50/50 rounded-2xl border border-brand-100"
                   >
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="text-xs font-bold text-gray-900 dark:text-white">
+                      <span className="text-xs font-bold text-ink">
                         {g.title}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        ₹{(g.currentAmount || 0).toLocaleString('en-IN')} / ₹
+                      <span className="text-xs text-muted">
+                        ₹{(g.currentAmount || 0).toLocaleString('en-IN')} of ₹
                         {g.targetAmount.toLocaleString('en-IN')} ({g.progressPercent}%)
                       </span>
                     </div>
-                    <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
+                    <div className="w-full h-2 bg-brand-100 rounded-full overflow-hidden mb-2">
                       <div
-                        className="h-full bg-indigo-600 rounded-full"
+                        className="h-full bg-brand-500 rounded-full"
                         style={{ width: `${Math.min(100, g.progressPercent)}%` }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-gray-500">
-                      <span>Required SIP: ₹{(g.requiredMonthlySIP || 0).toLocaleString('en-IN')}/mo</span>
+                    <div className="flex items-center justify-between text-[11px] text-muted">
+                      <span>Monthly savings needed: ₹{(g.requiredMonthlySIP || 0).toLocaleString('en-IN')}/mo</span>
                       <span
                         className={
                           g.feasibility?.isOnTrack
-                            ? 'text-emerald-600 font-semibold'
-                            : 'text-amber-500 font-semibold'
+                            ? 'text-good font-semibold'
+                            : 'text-warn font-semibold'
                         }
                       >
                         {g.feasibility?.isOnTrack ? '✓ On Track' : '⚠ Feasibility Alert'}
@@ -498,76 +512,76 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="pt-4 border-t border-gray-100 dark:border-gray-800 mt-4 flex items-center justify-between text-xs text-gray-500">
+          <div className="pt-3.5 border-t border-brand-100 mt-4 flex items-center justify-between text-xs text-muted relative z-10">
             <span>
-              Total Goals Active: <strong>{goals.filter((g) => g.status === 'in_progress').length}</strong>
+              Active Goals: <strong>{goals.filter((g) => g.status === 'in_progress').length}</strong>
             </span>
-            <Link to="/calculators/sip" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
-              Open SIP Calculator →
+            <Link to="/calculators/sip" className="text-brand-600 font-medium hover:underline">
+              SIP Calculator →
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Top Recommendations Banner */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xs">
+      {/* Helpful Tips for You Banner */}
+      <div className="bg-white border border-brand-100 rounded-3xl p-6 shadow-card">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">
-              Priority AI Directives
+            <Sparkles className="w-4 h-4 text-brand-500" />
+            <h2 className="text-base font-heading font-bold text-ink">
+              Helpful Tips for You
             </h2>
           </div>
           <Link
             to="/recommendations"
-            className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+            className="text-xs text-brand-600 font-semibold hover:underline"
           >
-            All Recommendations ({recommendations.length}) →
+            All Tips ({recommendations.length}) →
           </Link>
         </div>
 
         {recommendations.length === 0 ? (
-          <p className="text-xs text-gray-500">No pending recommendations. You're doing great!</p>
+          <p className="text-xs text-muted">No pending recommendations. You're doing great!</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recommendations.slice(0, 3).map((rec) => (
               <div
                 key={rec._id}
-                className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 flex flex-col justify-between"
+                className="p-4 bg-brand-50/50 rounded-2xl border border-brand-100 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span
                       className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
                         rec.priority === 'high'
-                          ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400'
-                          : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400'
+                          ? 'bg-bad-bg text-bad'
+                          : 'bg-warn-bg text-warn'
                       }`}
                     >
                       {rec.priority} Priority
                     </span>
                     {rec.potentialMonthlyImpact > 0 && (
-                      <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      <span className="text-xs font-bold text-good">
                         +₹{rec.potentialMonthlyImpact.toLocaleString('en-IN')}/mo
                       </span>
                     )}
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-1">
+                  <h3 className="font-heading font-bold text-ink text-sm mb-1">
                     {rec.title}
                   </h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                  <p className="text-xs text-muted line-clamp-2">
                     {rec.text}
                   </p>
                 </div>
-                <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700/60 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                <div className="mt-3 pt-2 border-t border-brand-100 flex items-center justify-between">
+                  <span className="text-[10px] text-muted uppercase font-semibold">
                     {rec.category}
                   </span>
                   <Link
                     to="/recommendations"
-                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                    className="text-xs font-semibold text-brand-600 hover:underline"
                   >
-                    Act Now →
+                    Take Action →
                   </Link>
                 </div>
               </div>

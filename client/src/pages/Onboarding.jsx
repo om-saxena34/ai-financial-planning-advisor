@@ -5,10 +5,8 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import {
   User,
-  Briefcase,
   IndianRupee,
   Shield,
-  TrendingUp,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
@@ -16,7 +14,8 @@ import {
   PieChart,
 } from 'lucide-react';
 import PageWrapper from '../components/layout/PageWrapper';
-import { OCCUPATION_TYPES, RISK_PROFILES } from '../config/appConfig';
+import CornerDecor from '../components/common/CornerDecor';
+import HelpTooltip from '../components/common/HelpTooltip';
 
 export default function Onboarding() {
   const { user, checkAuth } = useAuth();
@@ -89,12 +88,12 @@ export default function Onboarding() {
       const { data } = await api.put('/profile', payload);
 
       if (data.success) {
-        toast.success('Financial profile configured successfully!');
-        await checkAuth(); // Refresh user state with onboardingComplete=true
+        toast.success('Your profile is ready!');
+        await checkAuth();
         navigate('/dashboard');
       }
     } catch (error) {
-      const msg = error.response?.data?.message || 'Failed to save financial profile';
+      const msg = error.response?.data?.message || 'Could not save your profile';
       toast.error(msg);
     } finally {
       setIsSubmitting(false);
@@ -106,15 +105,15 @@ export default function Onboarding() {
       <div className="max-w-2xl mx-auto py-6 px-4">
         {/* Step Indicator Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-xs font-semibold mb-3">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Financial Onboarding Wizard</span>
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[var(--blue-50)] text-[var(--blue-700)] border border-[var(--blue-100)] text-xs font-semibold mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--blue-500)]" />
+            <span>Quick Setup</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            Let's Set Up Your Baseline
+          <h1 className="text-2xl sm:text-3xl font-bold text-[var(--ink)]">
+            Tell Us a Bit About Your Finances
           </h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            FinWise uses these parameters to customize your health score and machine learning forecasts.
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            We use these simple numbers to build your health score and personalized plan.
           </p>
 
           {/* Progress bar */}
@@ -124,10 +123,10 @@ export default function Onboarding() {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                     step < currentStep
-                      ? 'bg-emerald-500 text-white'
+                      ? 'bg-[var(--good)] text-white'
                       : step === currentStep
-                      ? 'bg-indigo-600 text-white ring-4 ring-indigo-100 dark:ring-indigo-950'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-400'
+                      ? 'bg-[var(--blue-500)] text-white ring-4 ring-blue-100'
+                      : 'bg-[var(--blue-50)] text-[var(--muted)] border border-[var(--blue-100)]'
                   }`}
                 >
                   {step < currentStep ? '✓' : step}
@@ -135,7 +134,7 @@ export default function Onboarding() {
                 {step < 4 && (
                   <div
                     className={`flex-1 h-1 mx-2 rounded-full transition-all ${
-                      step < currentStep ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-800'
+                      step < currentStep ? 'bg-[var(--good)]' : 'bg-[var(--blue-100)]'
                     }`}
                   />
                 )}
@@ -145,21 +144,23 @@ export default function Onboarding() {
         </div>
 
         {/* Wizard Card */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 sm:p-10 shadow-xl shadow-indigo-500/5">
+        <div className="bg-white border border-[var(--blue-100)] rounded-3xl p-6 sm:p-10 shadow-xs relative overflow-hidden">
+          <CornerDecor variant="blob" position="top-right" size={90} opacity={0.3} />
+
           {/* STEP 1: Personal & Occupation */}
           {currentStep === 1 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <User className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Personal & Demographics</span>
+                <h2 className="text-lg font-bold text-[var(--ink)] flex items-center space-x-2">
+                  <User className="w-5 h-5 text-[var(--blue-500)]" />
+                  <span>About You</span>
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">Tell us a bit about your current life stage.</p>
+                <p className="text-xs text-[var(--muted)] mt-0.5">Tell us a bit about your current life stage.</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
                     Your Age (Years)
                   </label>
                   <input
@@ -168,30 +169,30 @@ export default function Onboarding() {
                     max="100"
                     value={formData.age}
                     onChange={(e) => handleChange('age', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Occupation Type
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    What You Do
                   </label>
                   <select
                     value={formData.occupationType}
                     onChange={(e) => handleChange('occupationType', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                   >
                     <option value="student">Student</option>
-                    <option value="salaried">Salaried Professional</option>
-                    <option value="self-employed">Self-Employed / Freelancer</option>
+                    <option value="salaried">Salaried Job</option>
+                    <option value="self-employed">Freelancer / Self-Employed</option>
                     <option value="business">Business Owner</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Number of Dependents
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    People Depending on You
                   </label>
                   <input
                     type="number"
@@ -199,10 +200,10 @@ export default function Onboarding() {
                     max="20"
                     value={formData.dependents}
                     onChange={(e) => handleChange('dependents', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                   />
-                  <span className="text-[11px] text-gray-400 mt-1 block">
-                    Individuals who rely on your income (children, non-earning parents, etc.)
+                  <span className="text-[11px] text-[var(--muted)] mt-1 block">
+                    Family members who rely on your income (like parents or children).
                   </span>
                 </div>
               </div>
@@ -213,20 +214,20 @@ export default function Onboarding() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <IndianRupee className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Monthly Cash Flow</span>
+                <h2 className="text-lg font-bold text-[var(--ink)] flex items-center space-x-2">
+                  <IndianRupee className="w-5 h-5 text-[var(--blue-500)]" />
+                  <span>Monthly Income & Bills</span>
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">Your typical take-home income and recurring essential bills.</p>
+                <p className="text-xs text-[var(--muted)] mt-0.5">Your typical take-home income and regular bills.</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Monthly Take-Home Income (₹)
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    Take-Home Salary or Earnings (₹ / month)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-gray-400 font-semibold text-sm">₹</span>
+                    <span className="absolute left-3.5 top-2.5 text-[var(--muted)] font-semibold text-sm">₹</span>
                     <input
                       type="number"
                       min="0"
@@ -234,17 +235,17 @@ export default function Onboarding() {
                       value={formData.monthlyIncome}
                       onChange={(e) => handleChange('monthlyIncome', e.target.value)}
                       placeholder="50,000"
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Fixed Monthly Commitments (₹)
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    Fixed Monthly Bills (₹ / month)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-gray-400 font-semibold text-sm">₹</span>
+                    <span className="absolute left-3.5 top-2.5 text-[var(--muted)] font-semibold text-sm">₹</span>
                     <input
                       type="number"
                       min="0"
@@ -252,11 +253,11 @@ export default function Onboarding() {
                       value={formData.fixedExpenses}
                       onChange={(e) => handleChange('fixedExpenses', e.target.value)}
                       placeholder="20,000"
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                     />
                   </div>
-                  <span className="text-[11px] text-gray-400 mt-1 block">
-                    Total essential recurring costs: Rent, EMIs, Groceries, Electricity, WiFi, Insurance.
+                  <span className="text-[11px] text-[var(--muted)] mt-1 block">
+                    Essential monthly bills: Rent, EMIs, Groceries, Electricity, WiFi.
                   </span>
                 </div>
               </div>
@@ -267,20 +268,20 @@ export default function Onboarding() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <PieChart className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Current Reserves & Investments</span>
+                <h2 className="text-lg font-bold text-[var(--ink)] flex items-center space-x-2">
+                  <PieChart className="w-5 h-5 text-[var(--blue-500)]" />
+                  <span>Your Current Savings</span>
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">Helps calculate your initial Emergency Fund Coverage ratio.</p>
+                <p className="text-xs text-[var(--muted)] mt-0.5">Helps us calculate your emergency cushion.</p>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Liquid Bank Savings & Cash (₹)
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    Bank Balance & Cash (₹)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-gray-400 font-semibold text-sm">₹</span>
+                    <span className="absolute left-3.5 top-2.5 text-[var(--muted)] font-semibold text-sm">₹</span>
                     <input
                       type="number"
                       min="0"
@@ -288,20 +289,20 @@ export default function Onboarding() {
                       value={formData.existingSavings}
                       onChange={(e) => handleChange('existingSavings', e.target.value)}
                       placeholder="50,000"
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                     />
                   </div>
-                  <span className="text-[11px] text-gray-400 mt-1 block">
-                    Funds readily available in savings accounts, FDs, or liquid funds.
+                  <span className="text-[11px] text-[var(--muted)] mt-1 block">
+                    Money sitting in your bank accounts or fixed deposits.
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                    Existing Investments (₹)
+                  <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                    Current Investments (₹)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-2.5 text-gray-400 font-semibold text-sm">₹</span>
+                    <span className="absolute left-3.5 top-2.5 text-[var(--muted)] font-semibold text-sm">₹</span>
                     <input
                       type="number"
                       min="0"
@@ -309,11 +310,11 @@ export default function Onboarding() {
                       value={formData.existingInvestments}
                       onChange={(e) => handleChange('existingInvestments', e.target.value)}
                       placeholder="25,000"
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
                     />
                   </div>
-                  <span className="text-[11px] text-gray-400 mt-1 block">
-                    Current value of Mutual Funds, Stocks, PF/PPF, or Gold.
+                  <span className="text-[11px] text-[var(--muted)] mt-1 block">
+                    Total in Mutual Funds, Stocks, PF/PPF, or Gold.
                   </span>
                 </div>
               </div>
@@ -324,32 +325,32 @@ export default function Onboarding() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center space-x-2">
-                  <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <span>Investment Risk Appetite</span>
+                <h2 className="text-lg font-bold text-[var(--ink)] flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-[var(--blue-500)]" />
+                  <span>How You Feel About Risk</span>
                 </h2>
-                <p className="text-xs text-gray-500 mt-0.5">Select how you handle investment volatility.</p>
+                <p className="text-xs text-[var(--muted)] mt-0.5">Select what makes you feel most comfortable.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
                   {
                     id: 'conservative',
-                    label: 'Conservative',
+                    label: 'Safe & Steady',
                     returnRate: '~7% p.a.',
-                    desc: 'Prioritizes safety over high returns. Heavy in Debt, FDs & Government bonds.',
+                    desc: 'You prefer safety over high returns. Heavy in Fixed Deposits and Government bonds.',
                   },
                   {
                     id: 'moderate',
-                    label: 'Moderate',
+                    label: 'Balanced',
                     returnRate: '~10–12% p.a.',
-                    desc: 'Balanced approach with Index funds, large-cap equities and fixed income.',
+                    desc: 'Balanced approach with broad market index funds and safe savings.',
                   },
                   {
                     id: 'aggressive',
-                    label: 'Aggressive',
+                    label: 'Growth Focused',
                     returnRate: '~14–16% p.a.',
-                    desc: 'Higher volatility tolerance for maximum compounding via Equity, Mid/Small-caps.',
+                    desc: 'You can handle ups and downs to grow your wealth faster in equity funds.',
                   },
                 ].map((risk) => (
                   <div
@@ -357,15 +358,15 @@ export default function Onboarding() {
                     onClick={() => handleChange('riskProfile', risk.id)}
                     className={`cursor-pointer p-4 rounded-2xl border-2 transition-all ${
                       formData.riskProfile === risk.id
-                        ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30'
-                        : 'border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
+                        ? 'border-[var(--blue-500)] bg-[var(--blue-50)]'
+                        : 'border-[var(--blue-100)] bg-white hover:border-[var(--blue-300)]'
                     }`}
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-sm text-gray-900 dark:text-white">{risk.label}</span>
-                      <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">{risk.returnRate}</span>
+                      <span className="font-bold text-sm text-[var(--ink)]">{risk.label}</span>
+                      <span className="text-xs font-semibold text-[var(--blue-700)]">{risk.returnRate}</span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{risk.desc}</p>
+                    <p className="text-xs text-[var(--muted)] mt-1">{risk.desc}</p>
                   </div>
                 ))}
               </div>
@@ -373,12 +374,12 @@ export default function Onboarding() {
           )}
 
           {/* Navigation Controls */}
-          <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+          <div className="mt-8 pt-6 border-t border-[var(--blue-100)] flex justify-between items-center">
             {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
-                className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold text-[var(--ink)] hover:bg-[var(--blue-50)] border border-[var(--blue-100)] bg-white transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
               </button>
@@ -388,7 +389,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all"
+                className="inline-flex items-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-[var(--blue-500)] hover:bg-[var(--blue-700)] shadow-xs transition-all"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -398,13 +399,13 @@ export default function Onboarding() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="inline-flex items-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 transition-all disabled:opacity-60"
+                className="inline-flex items-center px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-[var(--good)] hover:opacity-90 shadow-xs transition-all disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <>
-                    <span>Finish Setup & Launch</span>
+                    <span>Finish Setup & Go to Dashboard</span>
                     <CheckCircle2 className="w-4 h-4 ml-1.5" />
                   </>
                 )}

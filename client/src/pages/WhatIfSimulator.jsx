@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PageWrapper from '../components/layout/PageWrapper';
-import { healthScoreService } from '../services/healthScore.service';
-import { transactionService } from '../services/transaction.service';
-import { predictionService } from '../services/prediction.service';
+import CornerDecor from '../components/common/CornerDecor';
+import HelpTooltip from '../components/common/HelpTooltip';
+import AnimatedNumber from '../components/common/AnimatedNumber';
 import {
   Sliders,
   Sparkles,
   TrendingUp,
-  ShieldCheck,
   RotateCcw,
-  ArrowRight,
-  Zap,
   CheckCircle2,
-  DollarSign,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -57,11 +53,9 @@ export default function WhatIfSimulator() {
     const newSavings = Math.max(0, newIncome - newExpenses);
     const newSavingsRate = newSavings / newIncome;
 
-    // Approximate health score impact:
-    // +20 points max for savings rate boost, +10 points for expense cut
     const savingsRateScore = Math.min(25, Math.round((newSavingsRate / 0.3) * 25));
     const expenseScore = Math.min(20, Math.round(((1 - newExpenses / newIncome) / 0.5) * 20));
-    const basePillarsScore = 40; // baseline contribution from other factors
+    const basePillarsScore = 40;
     const newScore = Math.min(100, Math.max(20, basePillarsScore + savingsRateScore + expenseScore));
 
     // Dynamic Persona Shift
@@ -73,11 +67,9 @@ export default function WhatIfSimulator() {
     }
 
     // 5-Year Wealth Math:
-    // Future value of existing investments compounded at returnRate
     const r_annual = returnRate / 100;
     const existingGrowth = baseData.existingInvestments * Math.pow(1 + r_annual, 5);
 
-    // SIP compounding of (base monthly savings + sipBoost)
     const totalMonthlyInvestment = Math.max(0, baseData.monthlySip + Number(sipBoost) + cutAmount * 0.5);
     const r_monthly = r_annual / 12;
     const n_months = 60;
@@ -90,7 +82,6 @@ export default function WhatIfSimulator() {
 
     const sim5y = Math.round(baseData.existingSavings + existingGrowth + sipFv);
 
-    // Baseline 5y wealth without changes
     const baseSipFv =
       baseData.monthlySip *
       ((Math.pow(1 + 0.1 / 12, 60) - 1) / (0.1 / 12)) *
@@ -141,41 +132,43 @@ export default function WhatIfSimulator() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-full mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--blue-50)] text-[var(--blue-700)] text-xs font-semibold rounded-full mb-2 border border-[var(--blue-100)]">
+            <Sparkles className="w-3.5 h-3.5 text-[var(--blue-500)]" />
             Interactive Scenario Planning
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-[var(--ink)]">
             What-If Financial Simulator
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Simulate the multi-year compound impact of salary bumps, spending discipline, and SIP boosts.
+          <p className="text-sm text-[var(--muted)] mt-1">
+            See how small changes today shape your wealth and savings score over the next 5 years.
           </p>
         </div>
         <button
           onClick={handleReset}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-semibold rounded-xl transition-colors"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[var(--blue-100)] text-[var(--ink)] hover:bg-[var(--blue-50)] text-xs font-semibold rounded-xl shadow-xs transition-colors"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="w-3.5 h-3.5 text-[var(--blue-500)]" />
           Reset Sliders
         </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         {/* Sliders Panel (1 Col) */}
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-6">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <Sliders className="w-4 h-4 text-indigo-600" />
+        <div className="bg-white border border-[var(--blue-100)] rounded-2xl p-6 shadow-xs space-y-6 relative overflow-hidden">
+          <CornerDecor variant="dots" position="top-right" size={50} opacity={0.3} />
+          <h2 className="text-base font-bold text-[var(--ink)] flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-[var(--blue-500)]" />
             Decision Controls
           </h2>
 
           {/* Slider 1: Income Delta */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-[var(--ink)] flex items-center gap-1">
                 Monthly Income Boost
+                <HelpTooltip term="Salary Bump" text="Simulate getting a promotion or new job that pays more each month." />
               </span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="font-bold text-[var(--good)]">
                 +₹{Number(incomeDelta).toLocaleString('en-IN')}
               </span>
             </div>
@@ -186,9 +179,9 @@ export default function WhatIfSimulator() {
               step="2000"
               value={incomeDelta}
               onChange={(e) => setIncomeDelta(e.target.value)}
-              className="w-full accent-indigo-600 cursor-pointer"
+              className="w-full accent-[#5B9FD6] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+            <div className="flex justify-between text-[10px] text-[var(--muted)] mt-1">
               <span>+₹0</span>
               <span>+₹25,000</span>
               <span>+₹50,000</span>
@@ -198,10 +191,11 @@ export default function WhatIfSimulator() {
           {/* Slider 2: Discretionary Cut */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-[var(--ink)] flex items-center gap-1">
                 Trim Discretionary Expenses
+                <HelpTooltip term="Cut spending" text="Eating out less, fewer impulse online orders, and cheaper entertainment." />
               </span>
-              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="font-bold text-[var(--blue-700)]">
                 {expenseCutPct}% cut
               </span>
             </div>
@@ -212,9 +206,9 @@ export default function WhatIfSimulator() {
               step="5"
               value={expenseCutPct}
               onChange={(e) => setExpenseCutPct(e.target.value)}
-              className="w-full accent-indigo-600 cursor-pointer"
+              className="w-full accent-[#5B9FD6] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+            <div className="flex justify-between text-[10px] text-[var(--muted)] mt-1">
               <span>0% (As-is)</span>
               <span>25% cut</span>
               <span>50% max</span>
@@ -224,10 +218,11 @@ export default function WhatIfSimulator() {
           {/* Slider 3: SIP Boost */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
+              <span className="font-semibold text-[var(--ink)] flex items-center gap-1">
                 Boost Monthly SIP
+                <HelpTooltip term="Extra SIP" text="Putting an extra amount each month directly into investments." />
               </span>
-              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+              <span className="font-bold text-[var(--blue-700)]">
                 +₹{Number(sipBoost).toLocaleString('en-IN')}/mo
               </span>
             </div>
@@ -238,9 +233,9 @@ export default function WhatIfSimulator() {
               step="1000"
               value={sipBoost}
               onChange={(e) => setSipBoost(e.target.value)}
-              className="w-full accent-indigo-600 cursor-pointer"
+              className="w-full accent-[#5B9FD6] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+            <div className="flex justify-between text-[10px] text-[var(--muted)] mt-1">
               <span>+₹0</span>
               <span>+₹12,000</span>
               <span>+₹25,000</span>
@@ -250,11 +245,11 @@ export default function WhatIfSimulator() {
           {/* Slider 4: Return Rate */}
           <div>
             <div className="flex justify-between items-center text-xs mb-1.5">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
-                Annual Portfolio Return
+              <span className="font-semibold text-[var(--ink)]">
+                Expected Yearly Return
               </span>
-              <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                {returnRate}% p.a.
+              <span className="font-bold text-[var(--blue-700)]">
+                {returnRate}% per year
               </span>
             </div>
             <input
@@ -264,10 +259,10 @@ export default function WhatIfSimulator() {
               step="0.5"
               value={returnRate}
               onChange={(e) => setReturnRate(e.target.value)}
-              className="w-full accent-indigo-600 cursor-pointer"
+              className="w-full accent-[#5B9FD6] cursor-pointer"
             />
-            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-              <span>8% (Conservative)</span>
+            <div className="flex justify-between text-[10px] text-[var(--muted)] mt-1">
+              <span>8% (Safe)</span>
               <span>12% (Index)</span>
               <span>16% (Aggressive)</span>
             </div>
@@ -279,69 +274,73 @@ export default function WhatIfSimulator() {
           {/* Impact KPI Summary */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Health Score Impact */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
-                Financial Health Score
+            <div className="bg-white border border-[var(--blue-100)] rounded-2xl p-5 shadow-xs relative overflow-hidden">
+              <CornerDecor variant="dots" position="top-right" size={40} opacity={0.25} />
+              <span className="text-xs text-[var(--muted)] uppercase font-semibold block mb-1">
+                Predicted Health Score
               </span>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
-                  {simResults.simScore}
+                <span className="text-2xl font-extrabold text-[var(--blue-700)]">
+                  <AnimatedNumber value={simResults.simScore} />
                 </span>
-                <span className="text-xs text-gray-400">/ 100</span>
-                <span className="text-xs font-bold text-emerald-600 ml-auto">
+                <span className="text-xs text-[var(--muted)]">/ 100</span>
+                <span className="text-xs font-bold text-[var(--good)] ml-auto">
                   +{simResults.simScore - baseData.baseScore} pts
                 </span>
               </div>
-              <div className="text-[11px] text-gray-400 mt-1">
-                Baseline was {baseData.baseScore}
+              <div className="text-[11px] text-[var(--muted)] mt-1">
+                Your current score is {baseData.baseScore}
               </div>
             </div>
 
             {/* Persona Shift */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
-                AI Behavior Class
+            <div className="bg-white border border-[var(--blue-100)] rounded-2xl p-5 shadow-xs relative overflow-hidden">
+              <CornerDecor variant="arc" position="top-right" size={40} opacity={0.25} />
+              <span className="text-xs text-[var(--muted)] uppercase font-semibold block mb-1">
+                Spending Style
               </span>
-              <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-extrabold text-[var(--good)]">
                 {simResults.simPersona}
               </div>
-              <div className="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                Target cluster achieved
+              <div className="text-[11px] text-[var(--good)] mt-1 flex items-center gap-1 font-medium">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Healthy habits unlocked
               </div>
             </div>
 
             {/* 5-Year Wealth Gain */}
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
+            <div className="bg-white border border-[var(--blue-100)] rounded-2xl p-5 shadow-xs relative overflow-hidden">
+              <CornerDecor variant="blob" position="top-right" size={45} opacity={0.3} />
+              <span className="text-xs text-[var(--muted)] uppercase font-semibold block mb-1">
                 5-Year Wealth Creation
               </span>
-              <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+              <div className="text-2xl font-extrabold text-[var(--ink)]">
                 ₹{(simResults.sim5yWealth / 100000).toFixed(1)}L
               </div>
-              <div className="text-[11px] text-emerald-600 font-bold mt-1">
-                +₹{(simResults.delta5yWealth / 100000).toFixed(1)}L extra wealth!
+              <div className="text-[11px] text-[var(--good)] font-bold mt-1">
+                +₹{(simResults.delta5yWealth / 100000).toFixed(1)}L extra saved!
               </div>
             </div>
           </div>
 
           {/* 5-Year Comparison Area Chart */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
+          <div className="bg-white border border-[var(--blue-100)] rounded-2xl p-6 shadow-xs relative overflow-hidden">
+            <CornerDecor variant="wave" position="top-right" size={60} opacity={0.3} />
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                  5-Year Compounding Trajectory
+                <h3 className="text-sm font-bold text-[var(--ink)]">
+                  5-Year Savings Trajectory
                 </h3>
-                <p className="text-xs text-gray-500">
-                  Simulated Strategy vs Baseline Status-Quo
+                <p className="text-xs text-[var(--muted)]">
+                  Your New Scenario vs Staying on Current Path
                 </p>
               </div>
               <div className="flex items-center gap-4 text-xs">
-                <span className="flex items-center gap-1.5 text-gray-500">
-                  <span className="w-2.5 h-2.5 rounded-full bg-gray-400" /> Baseline
+                <span className="flex items-center gap-1.5 text-[var(--muted)]">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--blue-300)]" /> Current path
                 </span>
-                <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-semibold">
-                  <span className="w-2.5 h-2.5 rounded-full bg-indigo-600" /> Simulated
+                <span className="flex items-center gap-1.5 text-[var(--blue-700)] font-semibold">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[var(--blue-500)]" /> New scenario
                 </span>
               </div>
             </div>
@@ -351,39 +350,41 @@ export default function WhatIfSimulator() {
                 <AreaChart data={trajectoryData}>
                   <defs>
                     <linearGradient id="colorSim" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#5B9FD6" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="#5B9FD6" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
-                  <XAxis dataKey="year" stroke="#9ca3af" fontSize={11} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#DCEBF8" opacity={0.7} />
+                  <XAxis dataKey="year" stroke="#6B7F92" fontSize={11} />
                   <YAxis
-                    stroke="#9ca3af"
+                    stroke="#6B7F92"
                     fontSize={11}
                     tickFormatter={(val) => `₹${(val / 100000).toFixed(1)}L`}
                   />
                   <Tooltip
                     formatter={(val) => [`₹${Number(val).toLocaleString('en-IN')}`, '']}
                     contentStyle={{
-                      backgroundColor: '#1f2937',
+                      backgroundColor: '#FFFFFF',
                       borderRadius: '0.75rem',
-                      color: '#fff',
+                      border: '1px solid #DCEBF8',
+                      color: '#1E3246',
                       fontSize: '11px',
+                      boxShadow: '0 4px 12px rgba(30, 50, 70, 0.08)',
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey="baseline"
-                    name="Baseline"
-                    stroke="#9ca3af"
+                    name="Current path"
+                    stroke="#A9CFEE"
                     strokeDasharray="4 4"
                     fill="transparent"
                   />
                   <Area
                     type="monotone"
                     dataKey="simulated"
-                    name="Simulated"
-                    stroke="#4f46e5"
+                    name="New scenario"
+                    stroke="#5B9FD6"
                     strokeWidth={2.5}
                     fill="url(#colorSim)"
                   />

@@ -1,0 +1,48 @@
+/**
+ * FinWise Design Tokens
+ * Light blue and milky white palette — calm, clean, human-designed.
+ */
+:root {
+  /* Core Surface & Canvas */
+  --bg: #FAF9F5;          /* Milky white page canvas */
+  --surface: #FFFFFF;     /* Pure white card surface */
+  --surface-subtle: #F5F4EE;
+
+  /* Human Brand Blues */
+  --blue-50: #EEF6FC;     /* Soft highlight & hover tint */
+  --blue-100: #DCEBF8;    /* Gentle borders & soft shapes */
+  --blue-200: #C4DFF5;    /* Soft dividers */
+  --blue-300: #A9CFEE;    /* Decorative shapes & chart fills */
+  --blue-400: #7EB3E0;    /* Secondary interactive */
+  --blue-500: #5B9FD6;    /* Primary brand buttons & links */
+  --blue-600: #4288C2;    /* Pressed & focus states */
+  --blue-700: #2F6EA3;    /* Active button & deep text */
+  --blue-800: #23547D;
+
+  /* Typography / Ink */
+  --ink: #1E3246;         /* Primary deep blue-grey text */
+  --ink-secondary: #3D5369; /* Supporting text */
+  --muted: #6B7F92;       /* Subtle captions & helper text */
+  --border: #E5EEF6;      /* Default card & divider border */
+
+  /* Gentle Feedback States */
+  --good: #4EAB7E;        /* Gentle sage green */
+  --good-bg: #EDF7F2;
+  --warn: #E09B3D;        /* Warm amber */
+  --warn-bg: #FDF6EC;
+  --bad: #E26D6D;         /* Soft coral */
+  --bad-bg: #FDF1F1;
+
+  /* Depth & Shadows */
+  --shadow-subtle: 0 1px 2px rgba(30, 50, 70, 0.04);
+  --shadow-card: 0 2px 12px rgba(30, 50, 70, 0.06);
+  --shadow-hover: 0 8px 24px rgba(30, 50, 70, 0.09);
+  --shadow-float: 0 16px 40px rgba(30, 50, 70, 0.12);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+}
