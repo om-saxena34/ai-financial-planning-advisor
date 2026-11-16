@@ -17,6 +17,8 @@ import {
   BarChart3,
   Bot,
   Search,
+  GraduationCap,
+  UploadCloud,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -31,9 +33,11 @@ export default function Navbar() {
     { name: 'Goals', path: '/goals', icon: Target },
     { name: 'Ask Fin', path: '/chat', icon: Bot },
     { name: 'Tips for You', path: '/recommendations', icon: Sparkles },
+    { name: 'What-If', path: '/what-if', icon: Sliders },
+    { name: 'Student', path: '/student-planner', icon: GraduationCap },
+    { name: 'Import CSV', path: '/statement-upload', icon: UploadCloud },
     { name: 'Calculators', path: '/calculators/sip', icon: Calculator },
     { name: 'Your Pattern', path: '/insights', icon: Brain },
-    { name: 'What-If', path: '/what-if', icon: Sliders },
   ];
 
   const isActive = (path) =>

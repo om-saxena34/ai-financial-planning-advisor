@@ -176,3 +176,33 @@ The database seed script (`npm run seed` in `server`) automatically populates th
 ### Question 11: What extra usability enhancements did you build into the frontend?
 **Winning Answer:**
 > *"Beyond the core requirements, we introduced: (1) An omnipresent Quick Command Palette accessed via `Ctrl+K` or `⌘K` for keyboard navigation across all financial tools, (2) Inline SVG corner decorations and gentle floating matter animations (`FloatingElements.jsx`) to create a calm, human-made aesthetic, (3) Interactive rich response cards inside the chat that allow instant 1-click goal setting and calculator deep-dives, and (4) Plain Class 7-8 English vocabulary with inline tooltips explaining financial terms."*
+
+---
+
+### Question 12: How does Student Mode accommodate irregular income and student life?
+**Winning Answer:**
+> *"Most personal finance software naively assumes a stable monthly salary. Students, however, earn intermittently via internships, pocket money, or scholarships. FinWise solves this by computing effective planning income as the statistical median of the last 3–6 months rather than the mean, making it robust against outlier months. Furthermore, we adapt our financial health rules specifically for students: the emergency fund threshold is reduced from 6 months of essential outgo to 3 months, an integrated Semester Fee Planner calculates exact monthly buffers needed before tuition deadlines, and a First-Salary Planner provides an actionable 50/30/20 roadmap tailored to Indian rent and living tiers."*
+
+---
+
+### Question 13: How does the What-If Simulator prevent formula duplication between the frontend and backend?
+**Winning Answer:**
+> *"To avoid code drift and discrepancy between instant UI sliders and backend evaluations, all deterministic financial formulas (Health Score, SIP future value, compound interest, semester fee amortization) reside in a single shared calculation package (`shared/financialCalc.js`). The React client imports these pure functions for zero-latency, 60fps slider updates with animated counters, while the Express backend utilizes the identical package for persisted scenario evaluations. Users can save up to 3 discrete scenarios and compare their 5-year wealth trajectory side-by-side in real-time Recharts visualizations."*
+
+---
+
+### Question 14: How does the "Why?" Explainer make AI decisions interpretable without heavy libraries like SHAP?
+**Winning Answer:**
+> *"Rather than treating ML predictions as a black box, FinWise implements an efficient, zero-dependency explainability engine based on manual feature permutation. In our Python microservice (`/explain/class`), we evaluate the baseline behavioral prediction, systematically substitute key features (savings rate, debt-to-income, emergency months) with population medians, and measure the probability delta to identify the top 3 driving factors. For the Health Score (`/explain/score`), we decompose composite points across the 6 pillars, identify the user's weakest component, and generate a concrete, actionable recommendation (e.g. '+4 points if you save ₹800 more this month')."*
+
+---
+
+### Question 15: How does Bank Statement Upload work and how is user privacy guaranteed?
+**Winning Answer:**
+> *"FinWise processes bank statement CSVs entirely in temporary memory using `multer` with memory storage—raw statement files, account numbers, and transaction IDs are never saved to disk or persistent storage. For categorization, merchant descriptions are vectorized using character n-grams (2–5 ngrams) and classified via a trained `LinearSVC` pipeline saved in `categorizer.joblib`. If a user manually reclassifies a merchant, a custom per-user keyword mapping (`CategoryRule`) is updated, allowing Fin to learn user preferences over time. Unusual transactions are flagged using Median Absolute Deviation (MAD), an outlier detection metric far more resilient to skewed financial data than standard deviation."*
+
+---
+
+### Question 16: What is Study Mode and how does it prove the system's effectiveness?
+**Winning Answer:**
+> *"Unlike projects that simply claim usefulness, FinWise includes an empirical evaluation framework (`Study Mode`) designed for academic rigor. Participants review an informed consent screen and are assigned an anonymous alphanumeric code (protecting PII). They complete a randomized 10-question financial literacy test and self-efficacy Likert survey before and after engaging with FinWise. The system tracks engagement telemetry and computes paired difference metrics (post-test vs pre-test) to statistically evaluate financial literacy gains. The administrator interface displays genuine anonymous outcomes with a strict policy against fabricated data."*

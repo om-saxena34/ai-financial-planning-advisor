@@ -20,6 +20,8 @@ import HealthScore from './pages/HealthScore';
 import Insights from './pages/Insights';
 import ModelMetrics from './pages/ModelMetrics';
 import WhatIfSimulator from './pages/WhatIfSimulator';
+import StudentPlanner from './pages/StudentPlanner';
+import StatementUpload from './pages/StatementUpload';
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 
@@ -48,6 +50,8 @@ export default function App() {
             <Route path="/health-score" element={<HealthScore />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/what-if" element={<WhatIfSimulator />} />
+            <Route path="/student-planner" element={<StudentPlanner />} />
+            <Route path="/statement-upload" element={<StatementUpload />} />
           </Route>
 
           {/* 404 catch-all */}
