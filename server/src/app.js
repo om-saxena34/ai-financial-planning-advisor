@@ -10,6 +10,9 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 
+// Trust reverse proxy (Render HTTPS load balancer / Cloudflare)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(
@@ -26,6 +29,16 @@ app.use(cookieParser());
 
 // Request logging via Morgan -> Winston
 app.use(morganMiddleware);
+
+// Root health check endpoint (responds instantly without DB check)
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    service: 'finwise-server',
+    uptime: Math.round(process.uptime()),
+  });
+});
 
 // Root route
 app.get('/', (req, res) => {

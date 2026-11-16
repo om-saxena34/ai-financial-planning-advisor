@@ -36,8 +36,11 @@ const config = Object.freeze({
   /** Current environment */
   NODE_ENV: process.env.NODE_ENV || 'development',
 
-  /** Allowed CORS origin */
-  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  /** Allowed CORS origin / Frontend URL */
+  CORS_ORIGIN: process.env.CLIENT_URL || process.env.CORS_ORIGIN || 'http://localhost:5173',
+
+  /** Client URL */
+  CLIENT_URL: process.env.CLIENT_URL || process.env.CORS_ORIGIN || 'http://localhost:5173',
 });
 
 // ── Startup validation ───────────────────────────────────────────────
@@ -49,6 +52,16 @@ if (
   console.warn(
     '\x1b[33m⚠  WARNING: JWT_SECRET is still the default value. ' +
       'Set a strong secret before deploying to production!\x1b[0m',
+  );
+}
+
+if (
+  config.NODE_ENV === 'production' &&
+  !process.env.MONGODB_URI
+) {
+  // eslint-disable-next-line no-console
+  console.error(
+    '\x1b[31m❌ FATAL: MONGODB_URI is missing in production mode! Please set a valid MongoDB Atlas connection string in Render environment variables.\x1b[0m',
   );
 }
 

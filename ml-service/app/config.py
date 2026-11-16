@@ -7,11 +7,13 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 
 
+_SERVICE_DIR = Path(__file__).resolve().parent.parent
+
 class Settings(BaseSettings):
     """Application settings loaded from environment variables or defaults."""
 
-    MODEL_DIR: str = "models"
-    DATA_DIR: str = "data"
+    MODEL_DIR: str = str(_SERVICE_DIR / "models")
+    DATA_DIR: str = str(_SERVICE_DIR / "data")
     MODEL_VERSION: str = "1.0.0"
     RANDOM_SEED: int = 42
     DATASET_SIZE: int = 10000

@@ -11,7 +11,9 @@ const { calculateRequiredSip } = require('../utils/financialMath');
 const { calculateCompositeScore } = require('../utils/healthScoreCalc');
 
 async function seed() {
+  const maskedUri = (config.MONGODB_URI || '').replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
   console.log('🌱 Starting FinWise Demo Database Seeder...');
+  console.log(`📡 Target Database: ${maskedUri}`);
 
   if (mongoose.connection.readyState === 0) {
     await mongoose.connect(config.MONGODB_URI);

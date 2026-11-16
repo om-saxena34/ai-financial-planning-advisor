@@ -13,8 +13,9 @@ const CategoryRule = require('../models/CategoryRule');
 const Transaction = require('../models/Transaction');
 const ApiResponse = require('../utils/ApiResponse');
 const ApiError = require('../utils/ApiError');
+const config = require('../config/env');
 
-const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+const ML_URL = config.ML_SERVICE_URL;
 
 const FALLBACK_KEYWORDS = {
   'Food & Dining': ['swiggy', 'zomato', 'mcdonalds', 'kfc', 'dominos', 'pizza', 'mess', 'canteen', 'cafe', 'restaurant', 'biryani', 'tea', 'snack'],

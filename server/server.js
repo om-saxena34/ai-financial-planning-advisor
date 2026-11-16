@@ -8,10 +8,13 @@ const startServer = async () => {
     // Connect to database
     await connectDB();
 
-    // Start listening
-    const server = app.listen(config.PORT, () => {
-      logger.info(`🚀 FinWise Server running on port ${config.PORT} [${config.NODE_ENV}]`);
-      logger.info(`📡 API endpoint: http://localhost:${config.PORT}/api/v1`);
+    // Start listening on 0.0.0.0 for container / cloud deployment (Render)
+    const HOST = '0.0.0.0';
+    const server = app.listen(config.PORT, HOST, () => {
+      logger.info(`🚀 FinWise Server running on ${HOST}:${config.PORT} [${config.NODE_ENV}]`);
+      if (config.NODE_ENV === 'development') {
+        logger.info(`📡 API endpoint: http://localhost:${config.PORT}/api/v1`);
+      }
     });
 
     // Unhandled rejections
