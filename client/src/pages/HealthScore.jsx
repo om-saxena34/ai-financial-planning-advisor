@@ -25,13 +25,16 @@ import PageWrapper from '../components/layout/PageWrapper';
 import CornerDecor from '../components/common/CornerDecor';
 import HelpTooltip from '../components/common/HelpTooltip';
 import AnimatedNumber from '../components/common/AnimatedNumber';
+import WhyPanel from '../components/common/WhyPanel';
 import { formatDate } from '../utils/formatters';
+import { HelpCircle } from 'lucide-react';
 
 export default function HealthScore() {
   const [scoreData, setScoreData] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [recalculating, setRecalculating] = useState(false);
+  const [whyOpen, setWhyOpen] = useState(false);
 
   const fetchScore = async () => {
     try {
@@ -107,14 +110,23 @@ export default function HealthScore() {
       title="Money Health Score"
       subtitle="A simple 0 to 100 check on your savings, emergency cushion, and loan discipline."
       actions={
-        <button
-          onClick={handleRecalculate}
-          disabled={recalculating}
-          className="inline-flex items-center px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-card transition-all disabled:opacity-60"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${recalculating ? 'animate-spin' : ''}`} />
-          <span>{recalculating ? 'Calculating...' : 'Recalculate Score'}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setWhyOpen(true)}
+            className="inline-flex items-center px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200 transition-all shadow-xs"
+          >
+            <HelpCircle className="w-3.5 h-3.5 mr-1.5" />
+            <span>Why this score?</span>
+          </button>
+          <button
+            onClick={handleRecalculate}
+            disabled={recalculating}
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold shadow-card transition-all disabled:opacity-60"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${recalculating ? 'animate-spin' : ''}`} />
+            <span>{recalculating ? 'Calculating...' : 'Recalculate Score'}</span>
+          </button>
+        </div>
       }
     >
       {loading ? (
@@ -345,6 +357,7 @@ export default function HealthScore() {
           )}
         </div>
       )}
+      <WhyPanel isOpen={whyOpen} onClose={() => setWhyOpen(false)} />
     </PageWrapper>
   );
 }
