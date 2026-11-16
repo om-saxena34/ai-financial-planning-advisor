@@ -11,7 +11,27 @@ export function AuthProvider({ children }) {
 
   // ── Check auth status on mount ──────────────────────
   const checkAuth = useCallback(async () => {
-    const token = localStorage.getItem('accessToken');
+    let token = localStorage.getItem('accessToken');
+
+    // Auto-login if ?demo=saver/balanced/overspender is in URL
+    if (!token && typeof window !== 'undefined' && window.location.search.includes('demo=')) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const demoType = params.get('demo') || 'saver';
+        const demoEmail = `${demoType}.demo@finwise.com`;
+        const { data } = await api.post('/auth/login', {
+          email: demoEmail,
+          password: 'Password@123',
+        });
+        token = data.data?.accessToken || data.accessToken;
+        if (token) {
+          localStorage.setItem('accessToken', token);
+        }
+      } catch (err) {
+        console.warn('Demo auto-login failed:', err.message);
+      }
+    }
+
     if (!token) {
       setLoading(false);
       return;
