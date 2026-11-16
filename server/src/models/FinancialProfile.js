@@ -1,5 +1,21 @@
 const mongoose = require('mongoose');
 
+// Income source sub-schema (used in Student Mode for irregular income)
+const incomeSourceSchema = new mongoose.Schema({
+  label:       { type: String, default: 'Other' },
+  type:        { type: String, enum: ['pocket_money','scholarship','part_time','internship','family','other'], default: 'other' },
+  amount:      { type: Number, default: 0, min: 0 },
+  isIrregular: { type: Boolean, default: false }, // irregular = use median, not sum
+}, { _id: false });
+
+// Semester fee entry
+const semesterFeeSchema = new mongoose.Schema({
+  amount:    { type: Number, default: 0, min: 0 },
+  dueDate:   { type: Date },
+  savedSoFar:{ type: Number, default: 0, min: 0 },
+  label:     { type: String, default: 'Semester Fee' },
+}, { _id: false });
+
 const financialProfileSchema = new mongoose.Schema(
   {
     userId: {
@@ -25,6 +41,14 @@ const financialProfileSchema = new mongoose.Schema(
       required: [true, 'Monthly income is required'],
       min: [0, 'Monthly income cannot be negative'],
     },
+    // Student Mode: multiple income sources (pocket money, scholarship, part-time…)
+    incomeSources: { type: [incomeSourceSchema], default: [] },
+    // Student Mode: semester fee planning
+    semesterFees: { type: [semesterFeeSchema], default: [] },
+    // Student Mode: expected first salary (for first-salary planner)
+    expectedFirstSalary: { type: Number, default: 0, min: 0 },
+    // Which months have extra expenses (festivals, exams, etc.)
+    bufferMonths: { type: [String], default: [] },
     fixedExpenses: {
       type: Number,
       required: [true, 'Fixed expenses is required'],
@@ -50,6 +74,8 @@ const financialProfileSchema = new mongoose.Schema(
       default: 0,
       min: [0, 'Dependents cannot be negative'],
     },
+    // City tier — affects rent estimates in first-salary planner
+    cityTier: { type: String, enum: ['tier1','tier2','other'], default: 'tier1' },
   },
   {
     timestamps: true,

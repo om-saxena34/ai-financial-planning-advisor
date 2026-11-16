@@ -34,6 +34,7 @@ export default function Onboarding() {
     existingSavings: 35000,
     existingInvestments: 15000,
     riskProfile: 'moderate',
+    expectedFirstSalary: 45000,
   });
 
   const handleChange = (field, value) => {
@@ -189,6 +190,25 @@ export default function Onboarding() {
                     <option value="other">Other</option>
                   </select>
                 </div>
+
+                {formData.occupationType === 'student' && (
+                  <div>
+                    <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
+                      Expected First Salary (After Graduation)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="e.g. 45000"
+                      value={formData.expectedFirstSalary || ''}
+                      onChange={(e) => handleChange('expectedFirstSalary', e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-[var(--blue-100)] bg-[var(--bg)] text-[var(--ink)] text-sm focus:border-[var(--blue-500)] outline-none"
+                    />
+                    <p className="text-2xs text-[var(--muted)] mt-1">
+                      Helps Fin build your 50/30/20 first-job plan and student emergency fund target.
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-semibold text-[var(--ink)] uppercase tracking-wider mb-2">
