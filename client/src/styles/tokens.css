@@ -1,6 +1,7 @@
 /**
  * FinWise Design Tokens
- * Light blue and milky white palette — calm, clean, human-designed.
+ * Light blue & milky white palette (Light) and soft deep blue-grey palette (Dark).
+ * WCAG AA accessible contrast, smooth transitions, calm human aesthetic.
  */
 :root {
   /* Core Surface & Canvas */
@@ -24,6 +25,7 @@
   --ink-secondary: #3D5369; /* Supporting text */
   --muted: #6B7F92;       /* Subtle captions & helper text */
   --border: #E5EEF6;      /* Default card & divider border */
+  --border-subtle: #DCEBF8;
 
   /* Gentle Feedback States */
   --good: #4EAB7E;        /* Gentle sage green */
@@ -32,6 +34,9 @@
   --warn-bg: #FDF6EC;
   --bad: #E26D6D;         /* Soft coral */
   --bad-bg: #FDF1F1;
+
+  /* Decor & Transparency */
+  --decor-opacity: 0.65;
 
   /* Depth & Shadows */
   --shadow-subtle: 0 1px 2px rgba(30, 50, 70, 0.04);
@@ -45,4 +50,66 @@
   --radius-lg: 20px;
   --radius-xl: 28px;
   --radius-full: 9999px;
+}
+
+/* ── Dark Theme (Soft Deep Blue-Grey) ─────────────────────────────────── */
+:root[data-theme='dark'],
+.dark {
+  /* Core Surface & Canvas */
+  --bg: #0F1A26;          /* Deep calm blue-slate canvas */
+  --surface: #16232F;     /* Subtle elevated card surface */
+  --surface-subtle: #1B2B3A;
+
+  /* Human Brand Blues (Calibrated for dark mode contrast) */
+  --blue-50: #1B2C3E;     /* Soft highlight & pill background */
+  --blue-100: #253D56;    /* Soft borders */
+  --blue-200: #335375;    /* Dividers */
+  --blue-300: #4B739B;    /* Decorative shapes */
+  --blue-400: #6294C2;    /* Secondary interactive */
+  --blue-500: #5B9FD6;    /* Primary brand buttons & links */
+  --blue-600: #7FB8E6;    /* Hover / accent on dark */
+  --blue-700: #A9CFEE;    /* High contrast text */
+  --blue-800: #DCEBF8;
+
+  /* Typography / Ink */
+  --ink: #E8EEF4;         /* High readability soft white-blue */
+  --ink-secondary: #C8D6E5;
+  --muted: #9FB1C2;       /* Legible muted grey-blue */
+  --border: #27394A;      /* Calm card border */
+  --border-subtle: #1E3142;
+
+  /* Gentle Feedback States (Tuned for dark backgrounds) */
+  --good: #52B788;
+  --good-bg: rgba(82, 183, 136, 0.16);
+  --warn: #E0A94A;
+  --warn-bg: rgba(224, 169, 74, 0.16);
+  --bad: #E57373;
+  --bad-bg: rgba(229, 115, 115, 0.16);
+
+  /* Decor & Transparency (Restrained glow in dark mode) */
+  --decor-opacity: 0.22;
+
+  /* Depth & Shadows in Dark Mode */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* ── Global Theme Transitions ────────────────────────────────────────── */
+html {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+body,
+.bg-canvas,
+.bg-card,
+[data-theme-surface] {
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html, body, .bg-canvas, .bg-card, [data-theme-surface] {
+    transition: none !important;
+  }
 }

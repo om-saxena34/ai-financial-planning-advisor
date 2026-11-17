@@ -1,49 +1,77 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export const ThemeContext = createContext(null);
+const ThemeContext = createContext({
+  theme: 'system',
+  resolvedTheme: 'light',
+  setTheme: () => {},
+  toggleTheme: () => {},
+});
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    // Check localStorage first
-    const stored = localStorage.getItem('theme');
-    if (stored === 'dark' || stored === 'light') return stored;
-
-    // Fall back to system preference
-    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
+  const [theme, setThemeState] = useState(() => {
+    try {
+      return localStorage.getItem('finwise-theme') || 'system';
+    } catch (_) {
+      return 'system';
     }
-    return 'light';
   });
 
-  // Apply the theme class to <html>
+  const [systemIsDark, setSystemIsDark] = useState(() => {
+    try {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch (_) {
+      return false;
+    }
+  });
+
+  // Watch system color scheme changes
+  useEffect(() => {
+    try {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      const listener = (e) => setSystemIsDark(e.matches);
+      media.addEventListener('change', listener);
+      return () => media.removeEventListener('change', listener);
+    } catch (_) {}
+  }, []);
+
+  const resolvedTheme = theme === 'system' ? (systemIsDark ? 'dark' : 'light') : theme;
+
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'dark') {
+    root.setAttribute('data-theme', resolvedTheme);
+    if (resolvedTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  }, [resolvedTheme]);
 
-  // Listen for system preference changes
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e) => {
-      // Only auto-switch if user hasn't explicitly set a preference
-      if (!localStorage.getItem('theme')) {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
-    };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme);
+    try {
+      localStorage.setItem('finwise-theme', newTheme);
+    } catch (_) {}
+  };
 
-  const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  }, []);
+  const toggleTheme = () => {
+    if (resolvedTheme === 'dark') {
+      setTheme('light');
+    } else {
+      setTheme('dark');
+    }
+  };
 
-  const value = { theme, setTheme, toggleTheme };
+  return (
+    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
 }

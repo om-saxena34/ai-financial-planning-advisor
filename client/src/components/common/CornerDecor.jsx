@@ -26,7 +26,7 @@ export default function CornerDecor({
     <div
       aria-hidden="true"
       className={`absolute pointer-events-none select-none z-0 overflow-hidden ${positionClasses} ${className}`}
-      style={{ opacity }}
+      style={{ opacity: `calc(${opacity} * var(--decor-opacity, 1))` }}
     >
       {variant === 'blob' && (
         <svg

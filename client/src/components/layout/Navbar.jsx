@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import ThemeToggle from '../common/ThemeToggle';
 import {
   Wallet,
   Menu,
@@ -19,6 +20,7 @@ import {
   Search,
   GraduationCap,
   UploadCloud,
+  TrendingUp,
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -29,6 +31,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'Life Plan', path: '/future-plan', icon: TrendingUp },
     { name: 'Expenses', path: '/transactions', icon: Receipt },
     { name: 'Goals', path: '/goals', icon: Target },
     { name: 'Ask Fin', path: '/chat', icon: Bot },
@@ -83,8 +86,9 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Right actions: Search + Profile Dropdown or Sign In */}
+          {/* Right actions: Search + Theme + Profile Dropdown or Sign In */}
           <div className="hidden lg:flex items-center space-x-3">
+            <ThemeToggle />
             <button
               onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
               className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl text-xs text-muted hover:text-ink bg-brand-50/50 hover:bg-brand-50 border border-brand-100 transition-all cursor-pointer"
@@ -162,8 +166,9 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button + theme */}
           <div className="flex lg:hidden items-center space-x-2">
+            <ThemeToggle />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl text-ink-secondary hover:bg-brand-50"

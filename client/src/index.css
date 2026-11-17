@@ -68,3 +68,49 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--muted);
   }
 }
+
+/* ── Dark Mode Auto-Adapters for Component Consistency ─ */
+[data-theme='dark'] .bg-white {
+  background-color: var(--surface) !important;
+}
+
+[data-theme='dark'] .bg-white\/90,
+[data-theme='dark'] .bg-white\/80 {
+  background-color: rgba(22, 35, 47, 0.92) !important;
+}
+
+[data-theme='dark'] .border-brand-100 {
+  border-color: var(--border) !important;
+}
+
+[data-theme='dark'] .border-brand-200 {
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme='dark'] .bg-brand-50,
+[data-theme='dark'] .bg-brand-50\/50 {
+  background-color: var(--blue-50) !important;
+}
+
+[data-theme='dark'] .hover\:bg-brand-50:hover {
+  background-color: var(--blue-50) !important;
+}
+
+[data-theme='dark'] .shadow-card,
+[data-theme='dark'] .shadow-xs,
+[data-theme='dark'] .shadow-sm {
+  box-shadow: var(--shadow-card) !important;
+}
+
+[data-theme='dark'] input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]),
+[data-theme='dark'] select,
+[data-theme='dark'] textarea {
+  background-color: var(--surface-subtle) !important;
+  color: var(--ink) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: var(--muted) !important;
+}
