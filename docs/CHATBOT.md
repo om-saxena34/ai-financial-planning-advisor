@@ -23,6 +23,38 @@ In an academic evaluation, examiners look for **deterministic engineering rigor*
 ## 2. Technical Architecture Pipeline
 
 ```
+
+---
+
+## 3. Real AI Tool Upgrade (Gemini Function Calling & Anti-Hallucination)
+
+Fin features a **hybrid AI orchestrator** (`server/src/services/chatbot/geminiChatbot.service.js`) powered by Google's official `@google/genai` Node SDK:
+
+### A. The 10 Server-Side Financial Tools
+When `FEATURE_GEMINI_AI_CHAT=true` and `GEMINI_API_KEY` is provided, Fin utilizes Gemini's Function Calling mechanism to run deterministic calculations on the backend:
+1. `calc_sip`: Calculates exact compound interest on recurring investments.
+2. `calc_compound`: Evaluates lump-sum returns.
+3. `required_sip`: Solves for the exact monthly contribution needed for target funds.
+4. `goal_status`: Fetches user's live goal progress bars from MongoDB.
+5. `spending_summary`: Summarizes essential bills, surplus, and savings rates.
+6. `health_score`: Computes 0–100 score across all pillars.
+7. `explain_score`: Explains the single easiest point gain.
+8. `what_if`: Models before-and-after scenarios.
+9. `student_planner`: Plans college semester fees and 50/30/20 first salary splits.
+10. `future_plan`: Generates 10-year inflation-adjusted projections and readiness ladder steps.
+
+### B. Anti-Hallucination Number Verifier
+Before sending Gemini's generated answer to the client, the server executes `verifyNumbers()`:
+- Extracts all numerical values, percentages, and rupee amounts from the model's text.
+- Validates that every number is present in the tool's JSON output or the user's prompt (within a 3% rounding tolerance).
+- If an ungrounded number is found, the server rejects the LLM prose and substitutes a safe, deterministic template directly formatted from the tool's data.
+
+### C. Privacy Boundary (Zero PII)
+- User names, email addresses, phone numbers, and individual bank transaction rows are **never** transmitted to external AI endpoints.
+- Gemini receives only anonymized context (e.g. `monthlyIncomeApprox: 60000`, `fixedBillsApprox: 35000`, `occupation: "student"`).
+
+### D. Graceful Circuit Breaker Fallback
+If the Gemini API key is missing, or if Gemini returns HTTP 429 (quota exceeded), or if the network request exceeds 18 seconds, Fin automatically and silently falls back to the deterministic rule-based knowledge engine without crashing or throwing client errors.
   ┌────────────────────────────────────────────────────────┐
   │                    React Frontend SPA                  │
   │  • Floating ChatbotLauncher    • Sliding ChatDrawer    │
@@ -67,6 +99,38 @@ In an academic evaluation, examiners look for **deterministic engineering rigor*
   │  • Educational Disclaimer Tag                          │
   └────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 3. Real AI Tool Upgrade (Gemini Function Calling & Anti-Hallucination)
+
+Fin features a **hybrid AI orchestrator** (`server/src/services/chatbot/geminiChatbot.service.js`) powered by Google's official `@google/genai` Node SDK:
+
+### A. The 10 Server-Side Financial Tools
+When `FEATURE_GEMINI_AI_CHAT=true` and `GEMINI_API_KEY` is provided, Fin utilizes Gemini's Function Calling mechanism to run deterministic calculations on the backend:
+1. `calc_sip`: Calculates exact compound interest on recurring investments.
+2. `calc_compound`: Evaluates lump-sum returns.
+3. `required_sip`: Solves for the exact monthly contribution needed for target funds.
+4. `goal_status`: Fetches user's live goal progress bars from MongoDB.
+5. `spending_summary`: Summarizes essential bills, surplus, and savings rates.
+6. `health_score`: Computes 0–100 score across all pillars.
+7. `explain_score`: Explains the single easiest point gain.
+8. `what_if`: Models before-and-after scenarios.
+9. `student_planner`: Plans college semester fees and 50/30/20 first salary splits.
+10. `future_plan`: Generates 10-year inflation-adjusted projections and readiness ladder steps.
+
+### B. Anti-Hallucination Number Verifier
+Before sending Gemini's generated answer to the client, the server executes `verifyNumbers()`:
+- Extracts all numerical values, percentages, and rupee amounts from the model's text.
+- Validates that every number is present in the tool's JSON output or the user's prompt (within a 3% rounding tolerance).
+- If an ungrounded number is found, the server rejects the LLM prose and substitutes a safe, deterministic template directly formatted from the tool's data.
+
+### C. Privacy Boundary (Zero PII)
+- User names, email addresses, phone numbers, and individual bank transaction rows are **never** transmitted to external AI endpoints.
+- Gemini receives only anonymized context (e.g. `monthlyIncomeApprox: 60000`, `fixedBillsApprox: 35000`, `occupation: "student"`).
+
+### D. Graceful Circuit Breaker Fallback
+If the Gemini API key is missing, or if Gemini returns HTTP 429 (quota exceeded), or if the network request exceeds 18 seconds, Fin automatically and silently falls back to the deterministic rule-based knowledge engine without crashing or throwing client errors.
 
 ---
 

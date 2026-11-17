@@ -8,4 +8,6 @@ module.exports = {
   WHY_EXPLAINER:         process.env.FF_WHY_EXPLAINER         !== 'false',
   STATEMENT_UPLOAD:      process.env.FF_STATEMENT_UPLOAD      !== 'false',
   STUDY_MODE:            process.env.FF_STUDY_MODE            === 'true',   // OFF by default
+  GEMINI_AI_CHAT:        process.env.FF_GEMINI_AI_CHAT        !== 'false',  // Enabled by default; falls back if no key
+  FUTURE_LIFE_PLAN:      process.env.FF_FUTURE_LIFE_PLAN      !== 'false',
 };

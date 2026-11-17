@@ -8,4 +8,6 @@ export const FEATURES = {
   WHY_EXPLAINER:          import.meta.env.VITE_FF_WHY_EXPLAINER         !== 'false',
   STATEMENT_UPLOAD:       import.meta.env.VITE_FF_STATEMENT_UPLOAD      !== 'false',
   STUDY_MODE:             import.meta.env.VITE_FF_STUDY_MODE            === 'true',
+  GEMINI_AI_CHAT:         import.meta.env.VITE_FF_GEMINI_AI_CHAT        !== 'false',
+  FUTURE_LIFE_PLAN:       import.meta.env.VITE_FF_FUTURE_LIFE_PLAN      !== 'false',
 };

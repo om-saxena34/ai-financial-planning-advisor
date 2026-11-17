@@ -1,6 +1,8 @@
 const { chatbotService } = require('../services/chatbot/chatbot.service');
+const geminiChatbotService = require('../services/chatbot/geminiChatbot.service');
 const { chatMemory } = require('../services/chatbot/chatMemory');
 const ApiResponse = require('../utils/ApiResponse');
+const features = require('../config/features');
 
 /**
  * Chatbot Controller
@@ -10,7 +12,32 @@ const sendMessage = async (req, res, next) => {
     const userId = req.user?.id || req.body?.guestId || null;
     const { message } = req.body;
 
-    const response = await chatbotService.processMessage(userId, message);
+    let response;
+    // Dispatch to Gemini AI chatbot if enabled, otherwise use rule-based Fin
+    if (features.GEMINI_AI_CHAT) {
+      response = await geminiChatbotService.processMessage(userId, message);
+    } else {
+      response = await chatbotService.processMessage(userId, message);
+    }
+
+    // Persist to memory for conversation continuity
+    if (userId && message && response) {
+      chatMemory.addMessage(userId, {
+        sender: 'user',
+        text: message,
+        timestamp: new Date().toISOString(),
+      });
+      chatMemory.addMessage(userId, {
+        sender: 'assistant',
+        text: response.text,
+        card: response.cards?.[0] || response.card || null,
+        cards: response.cards || [],
+        actionHint: response.actionHint || null,
+        disclaimer: response.disclaimer || null,
+        source: response.source || 'gemini_ai',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     return ApiResponse.success(res, response, 'Response generated successfully');
   } catch (error) {

@@ -6,11 +6,9 @@ import {
   Send,
   Trash2,
   Maximize2,
-  Minimize2,
   Sparkles,
-  Info,
-  HelpCircle,
-  RefreshCw,
+  Square,
+  RotateCcw,
 } from 'lucide-react';
 import { chatbotService } from '../../services/chatbot.service';
 import ChatMessage from './ChatMessage';
@@ -30,6 +28,8 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
   ]);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const abortControllerRef = useRef(null);
+  const lastUserMessageRef = useRef('');
 
   // Auto-scroll to bottom
   const scrollToBottom = (smooth = true) => {
@@ -55,10 +55,12 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
               rawHistory.map((m) => ({
                 role: m.sender === 'user' ? 'user' : 'assistant',
                 text: m.text,
-                card: m.card,
+                card: m.card || m.cards?.[0] || null,
                 actionHint: m.actionHint,
                 disclaimer: m.disclaimer,
+                source: m.source,
                 timestamp: m.timestamp || new Date().toISOString(),
+                isStreaming: false,
               }))
             );
           }
@@ -92,6 +94,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
     const textToSend = (messageText || input).trim();
     if (!textToSend || loading) return;
 
+    lastUserMessageRef.current = textToSend;
     setInput('');
     const userMsg = {
       role: 'user',
@@ -108,9 +111,12 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
         const botMsg = {
           role: 'assistant',
           text: res.data.text,
-          card: res.data.card,
+          card: res.data.card || res.data.cards?.[0] || null,
           actionHint: res.data.actionHint,
           disclaimer: res.data.disclaimer,
+          source: res.data.source,
+          note: res.data.note,
+          isStreaming: true, // Trigger word typewriter
           timestamp: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, botMsg]);
@@ -143,6 +149,16 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
     }
   };
 
+  const handleStopGenerating = () => {
+    setLoading(false);
+  };
+
+  const handleRegenerate = () => {
+    if (lastUserMessageRef.current) {
+      handleSend(lastUserMessageRef.current);
+    }
+  };
+
   const handleClearChat = async () => {
     if (messages.length === 0) return;
     try {
@@ -167,8 +183,8 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
     <div
       className={
         isEmbedded
-          ? 'w-full h-full flex flex-col bg-white rounded-2xl border border-brand-100 shadow-card overflow-hidden relative'
-          : 'fixed bottom-6 right-6 z-50 w-[92vw] sm:w-[420px] h-[580px] max-h-[85vh] flex flex-col bg-white rounded-2xl border border-brand-100 shadow-2xl overflow-hidden animate-fade-in'
+          ? 'w-full h-full flex flex-col bg-surface rounded-2xl border border-brand-100 shadow-card overflow-hidden relative'
+          : 'fixed bottom-6 right-6 z-50 w-[92vw] sm:w-[420px] h-[590px] max-h-[85vh] flex flex-col bg-surface rounded-2xl border border-brand-100 shadow-2xl overflow-hidden animate-fade-in'
       }
       role="dialog"
       aria-label="Fin Money Assistant"
@@ -188,11 +204,11 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
           <div>
             <div className="flex items-center space-x-1.5">
               <h3 className="font-heading font-bold text-sm text-ink">Fin</h3>
-              <span className="text-[10px] font-semibold text-brand-700 bg-brand-100 px-1.5 py-0.2 rounded-full">
-                AI Helper
+              <span className="text-[10px] font-semibold text-brand-700 bg-brand-100 px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
+                <Sparkles className="w-2.5 h-2.5 text-brand-500" /> AI Advisor
               </span>
             </div>
-            <p className="text-[11px] text-muted">Your friendly money assistant</p>
+            <p className="text-[11px] text-muted">Friendly money helper & planner</p>
           </div>
         </div>
 
@@ -201,7 +217,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
             <button
               onClick={handleClearChat}
               title="Clear conversation"
-              className="p-1.5 text-muted hover:text-bad rounded-lg hover:bg-white transition-colors"
+              className="p-1.5 text-muted hover:text-bad rounded-lg hover:bg-surface transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -212,7 +228,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
               to="/chat"
               onClick={onClose}
               title="Open full page chat"
-              className="p-1.5 text-muted hover:text-ink rounded-lg hover:bg-white transition-colors"
+              className="p-1.5 text-muted hover:text-ink rounded-lg hover:bg-surface transition-colors"
             >
               <Maximize2 className="w-4 h-4" />
             </Link>
@@ -222,7 +238,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
             <button
               onClick={onClose}
               title="Close chat"
-              className="p-1.5 text-muted hover:text-ink rounded-lg hover:bg-white transition-colors"
+              className="p-1.5 text-muted hover:text-ink rounded-lg hover:bg-surface transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -240,7 +256,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
             <div className="space-y-1">
               <h4 className="font-heading font-bold text-base text-ink">Hello! I'm Fin.</h4>
               <p className="text-xs text-muted max-w-xs leading-relaxed">
-                I can help you understand money, calculate SIP returns, see if you can afford a purchase, or check your financial health!
+                I can help you understand money, calculate SIP returns, plan semester fees, or see if you can afford a purchase!
               </p>
             </div>
 
@@ -251,7 +267,7 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
                   <button
                     key={i}
                     onClick={() => handleSend(sugg)}
-                    className="text-xs p-2 rounded-xl bg-white border border-brand-100 hover:border-brand-300 text-ink hover:text-brand-700 transition-all text-left flex items-center justify-between group shadow-2xs"
+                    className="text-xs p-2 rounded-xl bg-surface border border-brand-100 hover:border-brand-300 text-ink hover:text-brand-700 transition-all text-left flex items-center justify-between group shadow-2xs"
                   >
                     <span>{sugg}</span>
                     <span className="text-brand-400 group-hover:text-brand-600">→</span>
@@ -265,17 +281,30 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
             <ChatMessage
               key={idx}
               message={msg}
+              isLatest={idx === messages.length - 1}
+              isGenerating={loading}
+              onRegenerate={handleRegenerate}
               onActionClick={!isEmbedded ? onClose : undefined}
             />
           ))
         )}
 
-        {loading && <TypingIndicator />}
+        {loading && (
+          <div className="flex items-center justify-between py-1">
+            <TypingIndicator />
+            <button
+              onClick={handleStopGenerating}
+              className="text-[11px] text-muted hover:text-bad flex items-center gap-1 bg-surface px-2.5 py-1 rounded-full border border-brand-100 shadow-2xs transition-colors"
+            >
+              <Square className="w-2.5 h-2.5 fill-current" /> Stop
+            </button>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Footer & Quick Chips */}
-      <div className="p-2.5 bg-white border-t border-brand-100 relative z-10 space-y-2 flex-shrink-0">
+      <div className="p-2.5 bg-surface border-t border-brand-100 relative z-10 space-y-2 flex-shrink-0">
         <QuickReplyChips
           chips={suggestions}
           onSelect={(chip) => handleSend(chip)}
@@ -289,10 +318,10 @@ export default function ChatDrawer({ isOpen = true, onClose, isEmbedded = false 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Fin anything about money..."
+            placeholder="Ask Fin anything about money or planning..."
             disabled={loading}
             maxLength={300}
-            className="flex-1 text-xs sm:text-sm bg-bg border border-brand-100 rounded-xl px-3.5 py-2 text-ink placeholder:text-muted focus:outline-none focus:border-brand-500 focus:bg-white transition-all disabled:opacity-60"
+            className="flex-1 text-xs sm:text-sm bg-bg border border-brand-100 rounded-xl px-3.5 py-2 text-ink placeholder:text-muted focus:outline-none focus:border-brand-500 focus:bg-surface transition-all disabled:opacity-60"
           />
           <button
             type="button"
