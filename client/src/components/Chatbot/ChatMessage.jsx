@@ -50,7 +50,7 @@ export default function ChatMessage({
         setIsTyping(false);
         if (message.onStreamDone) message.onStreamDone();
       }
-    }, 22);
+    }, 10);
 
     return () => clearInterval(interval);
   }, [message.text, message.isStreaming, isUser]);
@@ -123,7 +123,7 @@ export default function ChatMessage({
           {message.source === 'gemini_ai' && (
             <div className="flex items-center gap-1 text-[10px] text-brand-600 font-semibold mb-1.5">
               <Sparkles className="w-3 h-3 text-brand-500" />
-              <span>Fin AI (Gemini)</span>
+              <span>Fin AI</span>
             </div>
           )}
 

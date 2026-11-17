@@ -123,11 +123,12 @@ class GeminiChatbotService {
 
     try {
       const client = this.getClient();
-      const modelName = config.GEMINI_MODEL || 'gemini-1.5-flash';
+      const modelName = config.GEMINI_MODEL || 'gemini-3.5-flash-lite';
       const userContext = await this.buildAnonymousContext(userId);
 
-      // Build tool definitions formatted for Google GenAI SDK
-      const tools = [{ functionDeclarations: toolDeclarations }];
+      // Fast-path: Only pass heavy tool schemas if query actually asks for calculations or numbers
+      const needsTools = /(?:sip|invest|save|saving|interest|compound|return|corpus|lakh|crore|k|fund|goal|score|health|fee|college|salary|bills?|spend|expense|budget|\d+)/i.test(messageText);
+      const tools = needsTools ? [{ functionDeclarations: toolDeclarations }] : undefined;
 
       const promptPayload = `
 ${userContext ? `User context: Income approx ₹${userContext.monthlyIncomeApprox}, Bills approx ₹${userContext.fixedBillsApprox}, Profile: ${userContext.occupation}.\n` : ''}
@@ -136,8 +137,8 @@ ${messageText}
 </user_query>
 `.trim();
 
-      // Set 30-second timeout for multi-turn tool calling
-      const callWithTimeout = (promise, ms = 30000) =>
+      // Set timeout for tool calling / generation
+      const callWithTimeout = (promise, ms = 25000) =>
         Promise.race([
           promise,
           new Promise((_, reject) => setTimeout(() => reject(new Error('AI request timeout')), ms)),
@@ -152,16 +153,19 @@ ${messageText}
       const toolOutputs = [];
       const toolCards = [];
 
+      const chatConfig = {
+        systemInstruction: FIN_SYSTEM_PROMPT,
+        temperature: 0.2,
+        maxOutputTokens: needsTools ? 350 : 180,
+      };
+      if (tools) chatConfig.tools = tools;
+
       // Execute via GenAI API
       if (client.chats && client.chats.create) {
         // Chat session with automatic thought_signature & tool management
         const chat = client.chats.create({
           model: modelName,
-          config: {
-            systemInstruction: FIN_SYSTEM_PROMPT,
-            tools,
-            temperature: 0.3,
-          },
+          config: chatConfig,
         });
 
         const response = await callWithTimeout(chat.sendMessage({ message: promptPayload }));
