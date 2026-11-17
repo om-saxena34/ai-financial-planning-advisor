@@ -206,3 +206,27 @@ The database seed script (`npm run seed` in `server`) automatically populates th
 ### Question 16: What is Study Mode and how does it prove the system's effectiveness?
 **Winning Answer:**
 > *"Unlike projects that simply claim usefulness, FinWise includes an empirical evaluation framework (`Study Mode`) designed for academic rigor. Participants review an informed consent screen and are assigned an anonymous alphanumeric code (protecting PII). They complete a randomized 10-question financial literacy test and self-efficacy Likert survey before and after engaging with FinWise. The system tracks engagement telemetry and computes paired difference metrics (post-test vs pre-test) to statistically evaluate financial literacy gains. The administrator interface displays genuine anonymous outcomes with a strict policy against fabricated data."*
+
+---
+
+### Question 17: How does Fin AI integrate Gemini while guaranteeing that financial numbers are never hallucinated?
+**Winning Answer:**
+> *"We built Fin as a hybrid AI orchestrator using Google's official `@google/genai` SDK and server-side Function Calling with 10 deterministic financial tools. Gemini's role is strictly natural language comprehension (understanding English, Hinglish, spelling mistakes, and intent). Whenever a financial calculation, score, or plan is needed, Gemini is required to call our backend tools (`calc_sip`, `required_sip`, `health_score`, `future_plan`, etc.). Furthermore, we implement an Anti-Hallucination Number Verifier: before sending the reply to the client, the backend scans every numeric token in the AI's prose and verifies that it is grounded in the tool output or user prompt within a 3% rounding tolerance. If an ungrounded figure is detected, the system safely falls back to a deterministic template. If the API key is missing or quota is exceeded, an automated circuit breaker immediately routes to our offline knowledge engine."*
+
+---
+
+### Question 18: What is the Future Life Plan and how does it calculate inflation-adjusted purchasing power?
+**Winning Answer:**
+> *"Most calculators show only nominal future wealth, which misleads users because ₹25 Lakhs in 15 years will not buy what it buys today. The FinWise Future Life Plan models year-by-year projections across 5 to 25 years incorporating annual salary step-ups, discrete life milestones (e.g. higher education, vehicle, wedding), and compound investment returns. Critically, we compute both Nominal Wealth and Real Purchasing Power by discounting future net worth using the compound inflation formula: $\text{Real Value} = \frac{\text{Nominal Value}}{(1 + r_{\text{inflation}})^t}$. We also display 'The Cost of Waiting' metric, demonstrating in concrete rupee terms how delaying an investment habit by just 3 years impacts lifetime compounding."*
+
+---
+
+### Question 19: How does FinWise respect users who are not ready or willing to take market risk?
+**Winning Answer:**
+> *"A key ethical flaw in standard fintech apps is aggressively pressuring beginners into equity investments or mutual funds before they are ready. FinWise introduces a dedicated 'Not ready to invest yet?' pathway centered on a 5-Step Financial Readiness Ladder: (1) Track Cash Flow, (2) Build a 1–3 month Safety Reserve, (3) Tame Costly Debt under 35% DTI, (4) Secure Basic Health Cover, and (5) Start a small ₹500 SIP only when ready. If a user selects 'Safe savings only', the platform switches to a pure capital-preservation model using bank FD/RD compounding (6.5% p.a.), completely eliminating stock market risk."*
+
+---
+
+### Question 20: How is Dark and Light mode implemented without theme flash (FOUC)?
+**Winning Answer:**
+> *"Theme switching is built natively using CSS Custom Properties (design tokens) defined in `tokens.css` with a deep blue-grey (`#0F1A26`) dark theme and a soft milky-white light theme. To completely eliminate Flash of Unstyled Content (FOUC) when reloading, we execute a tiny synchronous inline script in `index.html` that reads `localStorage.getItem('finwise-theme')` or the system `prefers-color-scheme` before React mounts, applying the `data-theme` attribute to the HTML root immediately. All colors, borders, and ambient background corner decor adapt smoothly with a 200ms transition."*

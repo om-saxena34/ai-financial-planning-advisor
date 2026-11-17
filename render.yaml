@@ -50,6 +50,10 @@ services:
           property: host
       - key: ML_SERVICE_TIMEOUT
         value: 15000
+      - key: GEMINI_API_KEY
+        sync: false # Set in Render dashboard (Google AI Studio secret API key)
+      - key: GEMINI_MODEL
+        value: gemini-1.5-flash
 
   # ── 3. React Vite Static Site ───────────
   - type: web

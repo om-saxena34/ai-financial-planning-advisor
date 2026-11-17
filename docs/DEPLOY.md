@@ -30,6 +30,10 @@ Here is every setting needed for each of the three services:
 | `CORS_ORIGIN` | `https://finwise-web.onrender.com` | Automatically matches `CLIENT_URL` |
 | `ML_SERVICE_URL` | `https://finwise-ml.onrender.com` | The public URL of your deployed Python ML service |
 | `ML_SERVICE_TIMEOUT` | `15000` | Timeout in milliseconds before falling back to rule engine |
+| `GEMINI_API_KEY` | `AIzaSy...` (secret) | From [Google AI Studio](https://aistudio.google.com). Leave empty to run Fin in basic mode. |
+| `GEMINI_MODEL` | `gemini-1.5-flash` | Fast, free-tier Flash model for Fin AI Chatbot |
+| `FEATURE_GEMINI_AI_CHAT` | `true` | Feature flag: set `false` to switch off AI bot and use rule-based Fin |
+| `FEATURE_FUTURE_LIFE_PLAN` | `true` | Feature flag: enables Future Life Plan & Readiness Ladder |
 
 ---
 
