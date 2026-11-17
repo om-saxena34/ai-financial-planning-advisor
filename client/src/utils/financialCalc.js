@@ -176,3 +176,220 @@ export function semesterFeePlan(feeAmount, dueDate, currentSavings = 0) {
   const onTrack = currentSavings >= feeAmount || monthlyNeeded <= 2000;
   return { feeAmount, dueDate: due.toISOString(), currentSavings, remaining, monthsLeft, monthlyNeeded, onTrack };
 }
+
+export function calcFutureLifePlan({
+  currentIncome = 50000,
+  currentMonthlyIncome,
+  currentExpenses = 30000,
+  currentMonthlyExpenses,
+  salaryGrowthRate = 8,
+  expenseInflationRate = 6,
+  salaryMilestones = [],
+  lifeEvents = [],
+  existingSavings = 25000,
+  investWhen = 'now',
+  investThreshold = 50000,
+  startingSip = 2500,
+  sipStepUpRate = 10,
+  comfortLevel = 'balanced',
+  timelineYears = 10,
+  years: yearsAlias,
+} = {}) {
+  const incInput = currentMonthlyIncome !== undefined ? currentMonthlyIncome : currentIncome;
+  const expInput = currentMonthlyExpenses !== undefined ? currentMonthlyExpenses : currentExpenses;
+  const totalYears = yearsAlias !== undefined ? yearsAlias : timelineYears;
+  const years = Math.min(30, Math.max(1, parseInt(totalYears, 10) || 10));
+
+  const expectedReturn =
+    comfortLevel === 'cautious' ? 8 :
+    comfortLevel === 'growth' ? 14 :
+    comfortLevel === 'safe_only' ? 6.5 : 11;
+
+  let monthlyInc = Math.max(0, incInput);
+  let monthlyExp = Math.max(0, expInput);
+  let cumulativeSavings = Math.max(0, existingSavings);
+  let cumulativeInvestments = 0;
+  let activeSip = Math.max(0, startingSip);
+
+  const planYears = [];
+  const milestoneNotes = [];
+
+  for (let yr = 1; yr <= years; yr++) {
+    const milestone = (salaryMilestones || []).find((m) => m.year === yr);
+    if (milestone && milestone.salary > 0) {
+      monthlyInc = milestone.salary;
+      milestoneNotes.push(`Year ${yr}: Salary reaches ₹${milestone.salary.toLocaleString('en-IN')}`);
+    } else if (yr > 1) {
+      monthlyInc = Math.round(monthlyInc * (1 + salaryGrowthRate / 100));
+    }
+
+    if (yr > 1) {
+      monthlyExp = Math.round(monthlyExp * (1 + expenseInflationRate / 100));
+    }
+
+    const annualIncome = monthlyInc * 12;
+    const annualExpenses = monthlyExp * 12;
+    const monthlySurplus = Math.max(0, monthlyInc - monthlyExp);
+    const annualSurplus = monthlySurplus * 12;
+
+    const eventsThisYear = (lifeEvents || []).filter((e) => e.year === yr);
+    const eventsCost = eventsThisYear.reduce((sum, e) => sum + (Number(e.amount || e.cost) || 0), 0);
+    eventsThisYear.forEach((e) => {
+      const val = Number(e.amount || e.cost) || 0;
+      milestoneNotes.push(`Year ${yr}: ${e.name || 'Life Event'} (₹${val.toLocaleString('en-IN')})`);
+    });
+
+    let canInvest = false;
+    if (investWhen === 'now') {
+      canInvest = true;
+    } else if (investWhen === 'when_salary_hits' || investWhen === 'at_salary') {
+      canInvest = monthlyInc >= (Number(investThreshold) || 50000);
+    } else if (investWhen === 'after_years') {
+      canInvest = yr >= (Number(investThreshold) || 2);
+    } else if (investWhen === 'never_safe_only') {
+      canInvest = false;
+    }
+
+    let currentYearSip = 0;
+    if (canInvest && monthlySurplus > 500) {
+      currentYearSip = Math.min(activeSip, Math.round(monthlySurplus * 0.7));
+      if (yr > 1) {
+        activeSip = Math.round(activeSip * (1 + sipStepUpRate / 100));
+      }
+    }
+
+    const annualInvested = currentYearSip * 12;
+    const annualCashSavings = Math.max(0, annualSurplus - annualInvested - eventsCost);
+
+    const rateDecimal = expectedReturn / 100;
+    cumulativeInvestments = Math.round(
+      cumulativeInvestments * (1 + rateDecimal) +
+      sipFutureValue(currentYearSip, expectedReturn, 1) - (currentYearSip * 12) + annualInvested
+    );
+
+    cumulativeSavings = Math.max(0, cumulativeSavings + annualCashSavings);
+    if (eventsCost > annualSurplus) {
+      const deficit = eventsCost - annualSurplus;
+      cumulativeSavings = Math.max(0, cumulativeSavings - deficit);
+    }
+
+    const discountFactor = Math.pow(1 + expenseInflationRate / 100, yr);
+    const realNetWorth = Math.round((cumulativeSavings + cumulativeInvestments) / discountFactor);
+
+    planYears.push({
+      year: yr,
+      monthlyIncome: monthlyInc,
+      annualIncome,
+      monthlyExpenses: monthlyExp,
+      annualExpenses,
+      monthlySurplus,
+      annualSurplus,
+      eventsCost,
+      monthlySip: currentYearSip,
+      annualInvested,
+      cashSavingsBalance: cumulativeSavings,
+      investmentValueNominal: cumulativeInvestments,
+      totalNetWorthNominal: cumulativeSavings + cumulativeInvestments,
+      totalNetWorthReal: realNetWorth,
+    });
+  }
+
+  const sipBase = Math.max(1000, startingSip);
+  const valNow = Math.round(sipFutureValue(sipBase, expectedReturn, 10));
+  const valWait3 = Math.round(sipFutureValue(sipBase, expectedReturn, 7));
+  const valWait5 = Math.round(sipFutureValue(sipBase, expectedReturn, 5));
+
+  const costOfWaiting = {
+    startNow: valNow,
+    wait3Years: valWait3,
+    wait5Years: valWait5,
+    costOf3YearsLost: Math.max(0, valNow - valWait3),
+    costOf5YearsLost: Math.max(0, valNow - valWait5),
+  };
+
+  const yrEnd = planYears[planYears.length - 1];
+  const finalNominal = yrEnd ? yrEnd.totalNetWorthNominal : 0;
+  const scenarioRange = {
+    cautious: Math.round(finalNominal * 0.82),
+    balanced: finalNominal,
+    growth: Math.round(finalNominal * 1.25),
+  };
+
+  return {
+    timelineYears: years,
+    comfortLevel,
+    expectedReturn,
+    salaryGrowthRate,
+    expenseInflationRate,
+    years: planYears,
+    milestoneNotes,
+    costOfWaiting,
+    scenarioRange,
+    isSafeSavingOnly: investWhen === 'never_safe_only' || comfortLevel === 'safe_only',
+  };
+}
+
+export function calcReadinessStep({
+  monthlyIncome = 0,
+  monthlyExpenses = 0,
+  liquidSavings = 0,
+  debtPayments = 0,
+  hasInsurance = false,
+  monthsTracked = 1,
+}) {
+  const essentialExpenses = Math.max(1, monthlyExpenses * 0.6);
+  const emergencyMonths = liquidSavings / essentialExpenses;
+  const dti = monthlyIncome > 0 ? (debtPayments / monthlyIncome) * 100 : 0;
+  const monthlySurplus = Math.max(0, monthlyIncome - monthlyExpenses);
+
+  const steps = [
+    {
+      step: 1,
+      title: 'Track Your Cash Flow',
+      description: 'Know exactly what comes in and what goes out each month.',
+      completed: monthsTracked >= 1,
+      unlockCriteria: 'Track income and bills for at least 1 month',
+      action: 'Log daily expenses or import bank statement',
+    },
+    {
+      step: 2,
+      title: 'Build Safety Reserve',
+      description: 'Keep 1 to 3 months of basic living costs safely in a bank account.',
+      completed: emergencyMonths >= 1.5,
+      unlockCriteria: 'Reach 1.5 months of essential bills in savings',
+      action: `Current cushion is ${emergencyMonths.toFixed(1)} months. Target is 3 months (₹${Math.round(essentialExpenses * 3).toLocaleString('en-IN')})`,
+    },
+    {
+      step: 3,
+      title: 'Tame Costly Debt',
+      description: 'Keep loan EMIs and credit cards below 30% of income.',
+      completed: dti < 35,
+      unlockCriteria: 'Lower total debt EMI payments below 35% of income',
+      action: dti > 35 ? `DTI is ${Math.round(dti)}%. Prioritize paying high-interest cards.` : 'Debt is under healthy control.',
+    },
+    {
+      step: 4,
+      title: 'Shield Yourself & Family',
+      description: 'Ensure basic health cover so medical surprises don\'t wipe out savings.',
+      completed: hasInsurance || emergencyMonths >= 3,
+      unlockCriteria: 'Basic health insurance policy or 3-month medical emergency buffer',
+      action: 'Check standalone health insurance policy options',
+    },
+    {
+      step: 5,
+      title: 'Start a Small SIP',
+      description: 'When ready, plant a small seed (₹500 to ₹1,000/mo) in broad market funds.',
+      completed: monthlySurplus >= 1000 && emergencyMonths >= 3,
+      unlockCriteria: 'Reliable monthly surplus of ₹1,000+ with 3-month emergency cushion',
+      action: 'Start with a simple ₹500 or ₹1,000 index SIP when comfortable',
+    },
+  ];
+
+  let currentStep = 1;
+  for (const s of steps) {
+    if (s.completed) currentStep = Math.min(5, s.step + 1);
+    else { currentStep = s.step; break; }
+  }
+
+  return { currentStep, steps };
+}

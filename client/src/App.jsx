@@ -22,6 +22,7 @@ import ModelMetrics from './pages/ModelMetrics';
 import WhatIfSimulator from './pages/WhatIfSimulator';
 import StudentPlanner from './pages/StudentPlanner';
 import StatementUpload from './pages/StatementUpload';
+import FuturePlan from './pages/FuturePlan';
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/model-metrics" element={<ModelMetrics />} />
           <Route path="/chat" element={<Chat />} />
+          <Route path="/future-plan" element={<FuturePlan />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>

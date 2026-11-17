@@ -16,6 +16,7 @@ const scenarioRoutes = require('./scenario.routes');
 const explainRoutes = require('./explain.routes');
 const statementRoutes = require('./statement.routes');
 const studyRoutes = require('./study.routes');
+const lifePlanRoutes = require('./lifePlan.routes');
 
 router.use('/auth', authRoutes);
 router.use('/profile', profileRoutes);
@@ -32,6 +33,7 @@ router.use('/scenarios', scenarioRoutes);
 router.use('/explain', explainRoutes);
 router.use('/statement', statementRoutes);
 router.use('/study', studyRoutes);
+router.use('/plan/future', lifePlanRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {
