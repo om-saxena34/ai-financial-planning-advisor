@@ -381,7 +381,9 @@ Implemented via piecewise linear interpolation (`interpolate()`) across 6 weight
 2. **Real AI Tool Mode (Gemini Function Calling):**
    - Active when `FEATURE_GEMINI_AI_CHAT=true` and `GEMINI_API_KEY` is populated.
    - Powered by official Google GenAI Node SDK (`@google/genai@3.4.0`).
-   - Default Model Configured: `gemini-1.5-flash` in `server/.env.example`.
+   - Default Model Configured: `gemini-3.5-flash-lite` in `server/.env.example`.
+   - UI Display Badge: Rebranded cleanly to `✨ Fin AI` with zero vendor branding.
+   - Smart Tool Dispatch: Skips heavy tool schemas for casual queries, accelerating response latency to ~2s.
 
 ### 6.2 Knowledge Base & Intent Coverage
 - **Knowledge Base Size:** 85 verified question-and-answer pairs covering investments, banking, UPI safety, insurance, student tips, and taxes in `server/src/services/chatbot/knowledge_base.json`.
