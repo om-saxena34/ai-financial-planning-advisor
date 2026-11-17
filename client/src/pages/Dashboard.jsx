@@ -5,6 +5,7 @@ import CornerDecor from '../components/common/CornerDecor';
 import HelpTooltip from '../components/common/HelpTooltip';
 import FloatingElements from '../components/common/FloatingElements';
 import AnimatedNumber from '../components/common/AnimatedNumber';
+import api from '../services/api';
 import { healthScoreService } from '../services/healthScore.service';
 import { transactionService } from '../services/transaction.service';
 import { goalService } from '../services/goal.service';
@@ -56,12 +57,13 @@ export default function Dashboard() {
   const [recommendations, setRecommendations] = useState([]);
   const [classification, setClassification] = useState(null);
   const [forecast, setForecast] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     async function fetchDashboardData() {
       try {
         setLoading(true);
-        const [healthRes, summaryRes, goalsRes, recsRes, classRes, forecastRes] =
+        const [healthRes, summaryRes, goalsRes, recsRes, classRes, forecastRes, profileRes] =
           await Promise.allSettled([
             healthScoreService.calculateScore(),
             transactionService.getSummary(),
@@ -69,6 +71,7 @@ export default function Dashboard() {
             recommendationService.getRecommendations(),
             predictionService.classify(),
             predictionService.forecast(),
+            api.get('/profile'),
           ]);
 
         if (healthRes.status === 'fulfilled') setHealthData(healthRes.value.data);
@@ -77,6 +80,10 @@ export default function Dashboard() {
         if (recsRes.status === 'fulfilled') setRecommendations(recsRes.value.data || []);
         if (classRes.status === 'fulfilled') setClassification(classRes.value.data);
         if (forecastRes.status === 'fulfilled') setForecast(forecastRes.value.data);
+        if (profileRes.status === 'fulfilled') {
+          const prof = profileRes.value.data?.data?.profile || profileRes.value.data?.data;
+          setProfile(prof);
+        }
       } catch (err) {
         console.error('Failed to load dashboard data', err);
       } finally {
@@ -100,12 +107,28 @@ export default function Dashboard() {
 
   const score = healthData?.score ?? 72;
   const grade = healthData?.grade ?? 'Good';
-  const income = summaryData?.summary?.totalIncome || 75000;
-  const expenses = summaryData?.summary?.totalExpense || 45000;
+
+  // Use live transaction data if available, else prioritize the user's onboarding profile values
+  const hasTransactions =
+    (summaryData?.summary?.totalIncome || 0) > 0 ||
+    (summaryData?.summary?.totalExpense || 0) > 0;
+  const profileIncome = profile?.monthlyIncome || 0;
+  const profileExpenses = profile?.fixedExpenses || 0;
+
+  const income = hasTransactions
+    ? summaryData.summary.totalIncome
+    : profileIncome || 75000;
+
+  const expenses = hasTransactions
+    ? summaryData.summary.totalExpense
+    : profileExpenses || 45000;
+
   const savings = Math.max(0, income - expenses);
   const savingsRate = summaryData?.ratios?.savingsRate
     ? (summaryData.ratios.savingsRate * 100).toFixed(1)
-    : ((savings / income) * 100).toFixed(1);
+    : income > 0
+    ? ((savings / income) * 100).toFixed(1)
+    : '0.0';
 
   const predictedClass = classification?.predicted_class || 'Balanced';
   const personaBadgeStyles = {
@@ -115,30 +138,45 @@ export default function Dashboard() {
   };
 
   const categoryData =
-    summaryData?.categoryBreakdown?.map((cat) => ({
-      name: cat.category,
-      value: cat.total,
-    })) || [
-      { name: 'Rent', value: 18000 },
-      { name: 'Food', value: 9500 },
-      { name: 'Transport', value: 4200 },
-      { name: 'Utilities', value: 3800 },
-      { name: 'Entertainment', value: 4500 },
-      { name: 'Shopping', value: 5000 },
-    ];
+    summaryData?.categoryBreakdown?.length
+      ? summaryData.categoryBreakdown.map((cat) => ({
+          name: cat.category,
+          value: cat.total,
+        }))
+      : profileExpenses > 0
+      ? [
+          { name: 'Fixed Bills & EMIs', value: Math.round(profileExpenses * 0.6) },
+          { name: 'Rent & Living', value: Math.round(profileExpenses * 0.4) },
+        ]
+      : [
+          { name: 'Rent', value: 18000 },
+          { name: 'Food', value: 9500 },
+          { name: 'Transport', value: 4200 },
+          { name: 'Utilities', value: 3800 },
+          { name: 'Entertainment', value: 4500 },
+          { name: 'Shopping', value: 5000 },
+        ];
 
-  const trendData = summaryData?.monthlyTrend?.map((item) => ({
-    month: item.month,
-    income: item.income,
-    expense: item.expense,
-  })) || [
-    { month: 'Jun', income: 75000, expense: 48000 },
-    { month: 'Jul', income: 75000, expense: 46000 },
-    { month: 'Aug', income: 75000, expense: 52000 },
-    { month: 'Sep', income: 78000, expense: 47000 },
-    { month: 'Oct', income: 78000, expense: 44000 },
-    { month: 'Nov', income: 80000, expense: 45000 },
-  ];
+  const trendData = summaryData?.monthlyTrend?.length
+    ? summaryData.monthlyTrend.map((item) => ({
+        month: item.month,
+        income: item.income,
+        expense: item.expense,
+      }))
+    : profileIncome > 0
+    ? ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'].map((m) => ({
+        month: m,
+        income: profileIncome,
+        expense: profileExpenses,
+      }))
+    : [
+        { month: 'Jun', income: 75000, expense: 48000 },
+        { month: 'Jul', income: 75000, expense: 46000 },
+        { month: 'Aug', income: 75000, expense: 52000 },
+        { month: 'Sep', income: 78000, expense: 47000 },
+        { month: 'Oct', income: 78000, expense: 44000 },
+        { month: 'Nov', income: 80000, expense: 45000 },
+      ];
 
   return (
     <PageWrapper title="Your Money Dashboard">
@@ -191,6 +229,29 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Not Ready to Invest Yet? Respectful Banner */}
+      <div className="mb-6 p-4 rounded-2xl bg-brand-50/60 border border-brand-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-surface border border-brand-200 flex items-center justify-center text-brand-600 flex-shrink-0">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-heading font-bold text-sm text-ink">
+              Not ready to invest in mutual funds or market risk yet?
+            </h3>
+            <p className="text-xs text-muted mt-0.5">
+              That is completely okay. Follow our 5-Step Readiness Ladder and build a safe bank cushion first.
+            </p>
+          </div>
+        </div>
+        <Link
+          to="/future-plan"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface hover:bg-brand-50 border border-brand-200 text-brand-700 shadow-2xs transition-all self-start sm:self-auto flex-shrink-0"
+        >
+          View Future Life Plan <ArrowUpRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* 4 Core KPI Cards */}
